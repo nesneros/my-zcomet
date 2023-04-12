@@ -1,4 +1,4 @@
-alias ll=ls -l
+alias ll="ls -l"
 alias week="date +%V"
 
 alias+ pgrep -fli
