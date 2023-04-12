@@ -18,16 +18,6 @@ alias -g Z='| fzf --tac'
 # Colorize json
 alias -g J='|jq .'
 
-# Disable glob for some commands
-for e in find fd mdfind rsync scp; do
-    alias "$e=noglob ${aliases[$e]:-$e}"
-done
-
-# Disable correction for some commands
-for e in ag cp grep ln mv; do
-    alias "$e=nocorrect ${aliases[$e]:-$e}"
-done
-
 alias myip='echo $(curl -s http://whatismyip.akamai.com/)'
 # alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 

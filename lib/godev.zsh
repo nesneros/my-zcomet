@@ -12,6 +12,8 @@
     alias gm="gorunpp main.go"
 #fi
 
+alias gor=gorunpp
+
 # https://golang.org/pkg/runtime/#hdr-Environment_Variables
 # GOTRACEBACK=1
 # The default. Prints a stack trace of all current goroutines.
