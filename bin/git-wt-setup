@@ -1,0 +1,162 @@
+#!/usr/bin/env zsh
+
+set -e
+
+remote=${GIT_DEFAULT_REMOTE:-origin}
+baseCommit=${GIT_MAIN_BRANCH:-main}
+
+zparseopts -D -E -remove=remove s:=summaryArg j:=jiraArg p:=projectArg t:=typeArg
+
+[[ -n "$summaryArg" ]] && summary=${summaryArg[2]}
+[[ -n "$jiraArg" ]] && jira=${jiraArg[2]}
+[[ -n "$projectArg" ]] && project=${projectArg[2]}
+[[ -n "$typeArg" ]] && type=${typeArg[2]}
+
+[[ -z "$type" ]] && type=feat
+[[ -z "$project" ]] && project=$JIRA_PROJECT
+[[ -z "$project" ]] && echo "Missing project" && exit 1
+
+if [[ "$jira" == "select" ]] ; then 
+    jira=$(jira --project "$JIRA_PROJECT" issue list -a$(jira me) --order-by rank -s~done | fzf --tac | awk "{ print \$2 }" )
+fi
+
+# echo "remove: $remove"
+# echo "project: $project"
+# echo "type: $type"
+# echo "jira: $jira"
+# echo "summary: $summary"
+# echo "args: ${(@)argv}"
+
+name=$1
+[[ "$name" == "." ]] && name=$(pwd)
+
+setupScript=$2
+[ -z "$setupScript" ] && setupScript=$WT_SETUP_SCRIPT
+
+usage() {
+    echo "Usage: git-wt-setup [--remove] [-s <summary>] [-j <task>] [-p <project>] [-t <type]  <name> [setup-script]"
+    echo
+    echo "  name: Name of the worktree"
+    echo "  setup-script: Script to run after creating the worktree"
+    echo 
+    echo "  summary: Create a new jira task with this as summary."
+    echo "  project: Jira project to use (default: $JIRA_PROJECT). This is only used when a new jira task is created."
+    echo "  task: Jira task to use instead of creating a new task."
+    echo
+    echo "  type: Conventional commit type (default: feat)."
+    echo
+    echo "  GIT_DEFAULT_REMOTE: Default remote to use (default: origin)"
+    echo "  GIT_MAIN_BRANCH: Default branch to use (default: main)"
+    echo "  WT_SETUP_SCRIPT: Default setup script to use"
+    echo
+    echo "  It is an error to specify both -s and -j"
+    echo "  It is an error to specify -s and/or -j together with --remove"
+}
+
+[[ -z "$name" ]] && usage && exit 1
+if [[ -n "$remove" ]] ; then
+ [[ -n "$jira" ]] && usage && exit 1
+ [[ -n "$summary" ]] && usage && exit 1
+fi
+
+# It $name is a direcotory then use that as the worktree
+if [[ -d $name ]]; then
+    name=$(basename $name)
+fi
+
+gitRepo=$(git-main-repo)
+dir="$(dirname "$gitRepo")/wt/$name"
+
+ask() {
+    echo -n "Continue? [y/N] "
+    read -r answer
+    if [[ $answer == "y" ]]; then
+        return 0
+    else
+        exit 1
+    fi
+}
+
+setup() {
+    echo "Creating Git worktree based on: $remote:$baseCommit"
+    echo "  branch: $name"
+    echo "  dir: $dir"
+    if [ -n "$jira" ]; then
+        echo "  jira: $jira"
+    fi
+
+    if [ -n "$summary" ]; then
+        ask
+        jira=$(create_jira_task)
+        echo "  created Jira task: $jira"
+    fi
+
+    if [ -n "$jira" ]; then
+        name="${jira}-${name}"
+        echo "  branch with Jira: $name"
+    fi
+    ask
+
+    git fetch "$remote" "$baseCommit"
+    git worktree add --no-track -b "$name" "$dir" "${remote}/${baseCommit}"
+    if [[ -n "$jira" ]]; then
+        git -C "$dir" cc-define "$type" "$jira"
+        echo "Commit prefix: '$(git -C $dir cc-prefix)'"
+    fi
+    if [ -n "$setupScript" ]; then
+        echo "Running setup script: $setupScript"
+        echo
+        "$setupScript" "$dir" "$name" "$remote"
+        echo
+        echo "Setup script finished"
+    fi
+    e "$dir"
+}
+
+remove() {
+    branch=$(git -C "$dir" branch --show-current)
+    echo "Removing Git worktree: $name"
+    echo "  branch: $branch"
+    echo "  dir: $dir"
+    if git -C "$dir" diff --quiet ; then
+        echo "  No changes in worktree"
+    else
+        echo "*** Changes in worktree: ***"
+        git -C "$dir" status --short | head -n 20
+    fi
+    ask
+
+    # Remove config entries for this branch
+    # git config --local --unset branch.$branch.msgPrefix ||:
+
+    # Remove worktree
+    git worktree remove --force "$dir"
+    # Delete local branch
+    git branch -D "$branch"
+
+    if git ls-remote --exit-code "$remote" "$branch" >/dev/null ; then
+        # Delete remote branch
+        echo -n "Delete remote ($remote) branch $branch ? [y/N] "
+        read -r answer
+        if [[ $answer == "y" ]]; then
+            git push "$remote" --delete "$branch" 
+        fi
+    fi
+}
+
+create_jira_task() {
+    jiraType="Task"
+    # For fix create jira bug
+    if [[ $type == "fix" ]]; then
+        jiraType="Bug"
+    fi
+    out=$(jira --project "${project}" -a "$(jira me)" issue create --web --summary "${summary}" --type "Task" --no-input)
+    result=$(echo "$out" | tail -n 1 | (read n ; basename $n))
+    echo $result
+}
+
+if [ -n "$remove" ]; then
+    remove
+else
+    setup
+fi

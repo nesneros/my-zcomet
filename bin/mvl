@@ -1,0 +1,26 @@
+#! /usr/bin/env zsh
+set -e
+
+# Move a file and create symbolic link to it from its old location
+
+PN=${0:t}
+
+usage() {
+    echo >&2 "$PN - move a file and create a symbolic link from its old location
+usage: $PN file [destination]"
+
+    exit 1
+}
+
+[[ $# -eq 1 ]] && exec "$0" "$1" .
+[[ $# -ne 2 ]] && usage
+
+SRC="$1"
+BASESRC="${SRC:t}"
+DEST="$2"
+
+[[ -d "$DEST" ]] && DEST="$DEST/$BASESRC"
+DEST=${DEST:a}
+
+mv "$SRC" "$DEST"
+ln -s "$DEST" "$SRC"

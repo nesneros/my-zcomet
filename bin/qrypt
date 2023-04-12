@@ -1,0 +1,31 @@
+#! /usr/bin/env zsh
+
+set -e
+
+if [ -z "${QRYPT_DIR}" ]; then
+    echo "\$QRYPT_DIR is not set"
+    exit 1
+fi
+cd "${QRYPT_DIR}"
+
+query="$1"
+if [ "$query" = '-1' ]; then
+    query="$2"
+    file=$(eval ls -1 -r "*$query*.pdf.{asc,gpg}(N)" | head -n 1)
+else
+    file=$(eval ls -1 -r "*$query*.pdf.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1)
+fi
+
+tmpFile="$(mktemp)"
+gpg --batch --quiet --output - <"$file" >"$tmpFile"
+mv "$tmpFile" "${tmpFile}.pdf"
+tmpFile="${tmpFile}.pdf"
+(
+    sleep 1
+    rm "$tmpFile"
+) &
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    [[ -n "$file" ]] && timeout --foreground 300 open $tmpFile 2>/dev/null
+else
+    [[ -n "$file" ]] && timeout --foreground 300 evince $tmpFile 2>/dev/null
+fi

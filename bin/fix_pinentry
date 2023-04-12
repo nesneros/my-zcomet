@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # pinentry-mac must be install and configured in .gnupg/gpg-agent.conf
+    # Install pinentry-mac
+    #   brew install pinentry-mac
+    # Set pinentry-mac as default
+    #   echo "pinentry-program /usr/local/bin/pinentry-mac" >> ~/.gnupg/gpg-agent.conf
+
+    pkill gpg-agent
+    gpg-agent --pinentry-program=$(which pinentry-mac) --daemon
+else 
+    gpg-connect-agent reloadagent /bye
+fi

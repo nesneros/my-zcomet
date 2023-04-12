@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+
+# Add to 'z' database
+
+set -e
+
+dir=$1
+if [[ -z $dir ]]; then
+    dir=.
+fi
+
+if [[ ! -d $dir ]]; then
+    echo "'$dir' is not a directory"
+    exit 1
+fi
+
+(( ${+commands[zoxide]} )) && zoxide add "$dir" ||:
+
+if [[ -n "$ZSHZ_SOURCE" ]] ; then 
+    eval "$ZSHZ_SOURCE"
+    which zshz
+    zshz --add "$dir"
+fi

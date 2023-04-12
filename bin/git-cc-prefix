@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+set -e 
+
+currentBranchName=$(git branch --show-current)
+type=$(git config --get "branch.$currentBranchName.commitType") || :
+scope=$(git config --get "branch.$currentBranchName.commitScope") || :
+
+[ -z "$type" ] && echo "" && exit 1
+
+prefix="$type"
+[ -n "$scope" ] && prefix="$prefix($scope)"
+prefix="$prefix: "
+
+echo "$prefix"

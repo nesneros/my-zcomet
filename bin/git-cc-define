@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+# Set type and optional scope for conventional commits (https://www.conventionalcommits.org/)
+
+set -e
+
+type=$1
+scope=$2
+
+[ -z "$type" ] && echo "Usage: $0 [--clear] <type> [<scope>]" >/dev/stderr && exit 1
+
+currentBranchName=$(git branch --show-current)
+
+# If --clear flag is specified then clear the type and scope for current branch
+if [[ "$type" == "--clear" ]]; then
+    git config --local --unset "branch.$currentBranchName.commitType"
+    git config --local --unset "branch.$currentBranchName.commitScope"
+    exit 0
+fi
+
+git config --local "branch.$currentBranchName.commitType" "$type"
+[ -n "$scope" ] && git config --local "branch.$currentBranchName.commitScope" "$scope"

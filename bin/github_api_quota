@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+token=$(api-token github)
+
+curl -s -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $token" https://api.github.com/rate_limit |
+    jq -r '.resources | to_entries[] | .value + { "name" : .key} | "\(.name):\t\(.remaining)\tof \(.limit)\treset at \(.reset | strflocaltime("%H:%M:%S %Z"))"' |
+    sort | column -t -s $'\t'

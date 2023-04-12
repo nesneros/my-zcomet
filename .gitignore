@@ -1,0 +1,4 @@
+themes/powerlevel10k/
+setup/Brewfile.lock.json
+lib/*.local.*
+*.zwc

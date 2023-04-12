@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+arg="${1:-.}"
+
+if [ -d "$arg" ]; then
+    cd "$arg"
+    hash zoxide &>/dev/null && zoxide add .
+    exec "$VEDITOR" . >/tmp/editor-log 2>&1 &
+else
+    exec "$VEDITOR" "$arg" >/tmp/editor-log 2>&1 &
+fi

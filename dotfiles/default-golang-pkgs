@@ -1,0 +1,4 @@
+golang.org/x/tools/...@latest
+github.com/josharian/impl@latest
+github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+github.com/maruel/panicparse/v2@latest

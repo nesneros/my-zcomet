@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+set -e
+
+name=$1
+[ -z "$name" ] && echo "Usage: $0 <name>" >/dev/stderr && exit 1
+
+fileBaseName=".${name}_token.asc"
+
+searchDirs=($HOME $HOME/Documents)
+for dir in $searchDirs; do
+    if [ -d "$dir" ]; then
+        file="$dir/$fileBaseName"
+        if [ -f "$file" ]; then
+            gpg -d "$file" 2>/dev/null
+            exit 0
+        fi
+    fi
+done
+
+echo "Missing '$name' API-token" >/dev/stderr
+exit 1
