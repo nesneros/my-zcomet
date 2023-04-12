@@ -1,3 +1,8 @@
+if [[ -z "$MY_ZCOMET" ]]; then
+  MY_ZCOMET=$(cd $(dirname $0)/.. ; pwd)
+fi
+export MY_ZCOMET
+
 export POWERLEVEL9K_INSTANT_PROMPT=verbose
 
 # Enable instant prompt for p10k
