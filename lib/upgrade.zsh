@@ -40,7 +40,7 @@ upgrade-all() {
     print "\n--- Upgrade completions ---"
     upgrade-completions
 
-    omz reload
+    exec zsh
 }
 
 upgrade-completions() {
