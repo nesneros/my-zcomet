@@ -35,7 +35,12 @@ _upgrade-all() {
     fi
 
     print "\n--- Upgrade zcomet ---"
-    type zcomet &>/dev/null && zcomet update | grep -v "Already up to date."
+    if type zcomet &>/dev/null ; then
+        # concat stdout and stderr from the two commands to stdout
+        { zcomet self-update ; zcomet update; } 2>&1   \
+            | sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' `# remove ANSI escape sequences` \
+            | grep -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" 
+    fi
 
     print "\n--- Upgrade completions ---"
     _upgrade-completions
