@@ -17,7 +17,6 @@ fi
 (( ${+commands[zoxide]} )) && zoxide add "$dir" ||:
 
 if [[ -n "$ZSHZ_SOURCE" ]] ; then 
-    eval "$ZSHZ_SOURCE"
-    which zshz
+    source "$ZSHZ_SOURCE"
     zshz --add "$dir"
 fi

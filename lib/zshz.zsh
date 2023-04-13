@@ -1,7 +1,4 @@
-ZSHZ_SOURCE=$(which zshz)
+export ZSHZ_SOURCE
+whence -v zshz | sed 's/zshz is a shell function from //' | read ZSHZ_SOURCE
 
-if [[ "$ZSHZ_SOURCE" == "zshz not found" ]];then
-    unset ZSHZ_SOURCE
-else 
-    export ZSHZ_SOURCE
-fi
+[[ $pipestatus[1] == 0 ]] || unset ZSHZ_SOURCE
