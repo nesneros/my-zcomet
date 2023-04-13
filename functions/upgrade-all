@@ -7,47 +7,6 @@ _asdf_latest() {
     fi
 }
 
-_upgrade-all() {
-    if hash apt-get &>/dev/null; then
-        print "\n--- Upgrading APT packages ---"
-        sudo apt-get update && sudo apt-get upgrade
-    fi
-
-    if hash brew &>/dev/null; then
-        print "\n--- Upgrading brews ---"
-        # brew upgrade --cask --greedy
-        brew upgrade --cask
-        brew upgrade
-        brew cleanup
-    fi
-
-    if hash asdf >/dev/null; then
-        print "\n--- Upgrading asdf plugins ---"
-        asdf plugin-update --all | grep -v "Already on '\|Your branch is up to date with"
-
-        _asdf_latest golang
-        # _asdf_latest direnv
-    fi
-
-    if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
-        print "\n--- Upgrading kubectl krew ---"
-        kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$"
-    fi
-
-    print "\n--- Upgrade zcomet ---"
-    if type zcomet &>/dev/null ; then
-        # concat stdout and stderr from the two commands to stdout
-        { zcomet self-update ; zcomet update; } 2>&1   \
-            | sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' `# remove ANSI escape sequences` \
-            | grep -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" 
-    fi
-
-    print "\n--- Upgrade completions ---"
-    _upgrade-completions
-
-    exec zsh
-}
-
 _upgrade-completions() {
     destDir=/usr/local/share/zsh/site-functions
 
@@ -65,4 +24,40 @@ _gen-comp() {
     fi
 }
 
-_upgrade-all
+if hash apt-get &>/dev/null; then
+    print "\n--- Upgrading APT packages ---"
+    sudo apt-get update && sudo apt-get upgrade
+fi
+
+if hash brew &>/dev/null; then
+    print "\n--- Upgrading brews ---"
+    # brew upgrade --cask --greedy
+    brew upgrade --cask
+    brew upgrade
+    brew cleanup
+fi
+
+if hash asdf >/dev/null; then
+    print "\n--- Upgrading asdf plugins ---"
+    asdf plugin-update --all | grep -v "Already on '\|Your branch is up to date with"
+
+    _asdf_latest golang
+    # _asdf_latest direnv
+fi
+
+if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
+    print "\n--- Upgrading kubectl krew ---"
+    kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$"
+fi
+
+print "\n--- Upgrade zcomet ---"
+if type zcomet &>/dev/null ; then
+    # concat stdout and stderr from the two commands to stdout
+    { zcomet self-update ; zcomet update; } 2>&1   \
+        | sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' `# remove ANSI escape sequences` \
+        | grep -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" 
+fi
+
+print "\n--- Upgrade completions ---"
+_upgrade-completions
+exec zsh

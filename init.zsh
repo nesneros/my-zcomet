@@ -32,7 +32,6 @@ alias+() {
 }
 
 zcomet load agkozak/zsh-z
-zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 
 _load_omz_plugin() {
   local pluginName="$1"
@@ -51,6 +50,8 @@ for config_file ($MY_ZCOMET/lib/*.zsh(N)); do
     source $config_file
 done
 unset config_file
+
+zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 
 # It is good to load these popular plugins last, and in this order:
 zcomet load Aloxaf/fzf-tab
