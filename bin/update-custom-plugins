@@ -1,8 +1,0 @@
-#! /usr/bin/env bash
-
-set -e
-
-cat .gitignore | grep "^plugins/" | while read p; do
-    echo -n "Updating $p: "
-    git -C "$p" pull
-done

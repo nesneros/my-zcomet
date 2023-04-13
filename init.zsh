@@ -1,3 +1,29 @@
+# Enable instant prompt for p10k
+(( ${+commands[direnv]} )) && emulate zsh -c "$(direnv export zsh)"
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+(( ${+commands[direnv]} )) && emulate zsh -c "$(direnv hook zsh)"
+
+# Load brew if install
+if [[ -z "$HOMEBREW_PREFIX" ]] ; then
+  brewLocations=(/opt/homebrew /usr/local /home/linuxbrew/.linuxbrew)
+  for e in $brewLocations; do
+    brewBin=$e/bin/brew
+    if [[ -x "$brewBin" ]] ; then
+      eval $($brewBin shellenv)
+      break
+    fi
+    unset brewBin
+  done
+  unset brewLocations
+fi
+
+if (( ${+commands[brew]} )) ; then
+  [[ -z "$HOMEBREW_PREFIX" ]] && echo "HOMEBREW_PREFIX not defined"
+  FPATH=${HOMEBREW_PREFIX}/share/zsh/site-functions:$FPATH
+fi
+
 # Inspired by Zoppo
 # Create an alias for a command with some options.
 # Either create new alias or add options to existing alias
