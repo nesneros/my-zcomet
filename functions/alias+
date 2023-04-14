@@ -3,4 +3,3 @@
 # Either create new alias or add options to existing alias
 
 alias "$1"="${aliases[$1]:-$1} $argv[2,-1]"
-
