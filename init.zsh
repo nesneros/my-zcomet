@@ -24,20 +24,19 @@ if (( ${+commands[brew]} )) ; then
   FPATH=${HOMEBREW_PREFIX}/share/zsh/site-functions:$FPATH
 fi
 
-# Inspired by Zoppo
-# Create an alias for a command with some options.
-# Either create new alias or add options to existing alias
-alias+() {
-    alias "$1"="${aliases[$1]:-$1} $argv[2,-1]"
-}
-
+# zsh-z: Define env var with the source to source to get the zshz function
 zcomet load agkozak/zsh-z
-
-zcomet load ohmyzsh plugins/dirhistory
-zcomet load ohmyzsh plugins/macos
+export ZSHZ_SOURCE
+whence -v zshz | sed 's/zshz is a shell function from //' | read ZSHZ_SOURCE
 
 # Include some standard functionality form OMZ
 zcomet load ohmyzsh/ohmyzsh lib completion.zsh directories.zsh functions.zsh history.zsh key-bindings.zsh misc.zsh
+
+# Load some OMZ plugins
+zcomet load ohmyzsh plugins/dirhistory
+zcomet load ohmyzsh plugins/macos
+
+autoload -Uz $MY_ZCOMET/functions/*
 
 # Load lib folder
 for config_file ($MY_ZCOMET/lib/*.zsh(N)); do
@@ -49,8 +48,16 @@ zcomet load junegunn/fzf shell completion.zsh key-bindings.zsh
 
 # It is good to load these popular plugins last, and in this order:
 zcomet load Aloxaf/fzf-tab
+
+# Some stuff from zsh-users
 zcomet load zsh-users/zsh-syntax-highlighting
-zcomet load zsh-users/zsh-completions . zsh-completions.plugin.zsh
+zcomet load zsh-users/zsh-completions
+zcomet load zsh-users/zsh-history-substring-search 
+#bindkey '^[[A' history-substring-search-up
+#bindkey '^[[B' history-substring-search-down
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+
 # zcomet load zsh-users/zsh-autosuggestions
 
 zcomet trigger --no-submodules archive unarchive lsarchive prezto modules/archive
@@ -71,12 +78,6 @@ linux*)
 darvin*) ;;
 *) ;;
 esac
-
-# Convenient function to create a dir and cd into it
-function mcd {
-    mkdir -p $1
-    cd $1
-}
 
 # Remove non-existing dirs from path
 valid_dirs=()

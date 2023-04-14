@@ -51,18 +51,17 @@ fi
 
 if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
     print "\n--- Upgrading kubectl krew ---"
-    kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$"
+    kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /'
 fi
 
-if [[ -n "$ZCOMET_SOURCEE" ]]; then 
-    source "$ZCOMET_SOURCE"
+
+if [[ -n "$ZCOMET_SOURCE" ]]; then 
+    source "$ZCOMET_SOURCE" 
     print "\n--- Upgrade zcomet ---"
-    if type zcomet &>/dev/null ; then
-        # concat stdout and stderr from the two commands to stdout
-        zsh -c "source $ZCOMET[SCRIPT] ; zcomet self-update ; zcomet update" 2>&1   \
-            | sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' `# remove ANSI escape sequences` \
-            | grep -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" 
-    fi
+    # concat stdout and stderr from the two commands to stdout
+    { zcomet self-update ; zcomet update } 2>&1   \
+        | sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' `# remove ANSI escape sequences` \
+        | grep -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$"
 fi
 
 print "\n--- Upgrade completions ---"
