@@ -2,10 +2,7 @@
 
 set -e
 
-env | sort
-
-echo $XXX
-echo source "$ZCOMET[SCRIPT]"
+echo source "$ZCOMET_SOURCE"
 
 _asdf_latest() {
     name=$1
