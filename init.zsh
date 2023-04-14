@@ -33,14 +33,8 @@ alias+() {
 
 zcomet load agkozak/zsh-z
 
-_load_omz_plugin() {
-  local pluginName="$1"
-  zcomet load "ohmyzsh/ohmyzsh" "plugins/$pluginName" "$pluginName.plugin.zsh"
-}
-
-_load_omz_plugin dirhistory
-_load_omz_plugin macos
-_load_omz_plugin web-search
+zcomet load ohmyzsh plugins/dirhistory
+zcomet load ohmyzsh plugins/macos
 
 # Include some standard functionality form OMZ
 zcomet load ohmyzsh/ohmyzsh lib completion.zsh directories.zsh functions.zsh history.zsh key-bindings.zsh misc.zsh
@@ -58,6 +52,8 @@ zcomet load Aloxaf/fzf-tab
 zcomet load zsh-users/zsh-syntax-highlighting
 zcomet load zsh-users/zsh-completions . zsh-completions.plugin.zsh
 # zcomet load zsh-users/zsh-autosuggestions
+
+zcomet trigger --no-submodules archive unarchive lsarchive prezto modules/archive
 
 function _makesudo {
     if type "$1" >/dev/null; then
@@ -88,10 +84,6 @@ for dir in $path; do
     [[ -d $dir ]] && valid_dirs+=($dir)
 done
 path=("${valid_dirs[@]}")
-
-
-# Autoload 
-autoload -Uz upgradeall
 
 zcomet compinit
 

@@ -1,6 +1,15 @@
+#!/usr/bin/env zsh
+
+set -e
+
+env | sort
+
+echo $XXX
+echo source "$ZCOMET[SCRIPT]"
+
 _asdf_latest() {
     name=$1
-    asdf plugin-add $name >/dev/null 2>&1
+    asdf plugin-add $name >/dev/null 2>&1 ||:
     if asdf install $name latest | grep -v "is already installed$"; then
         echo "asdf: NEW VERSION OF $name INSTALLED"
         asdf list $name
