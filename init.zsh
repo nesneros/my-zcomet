@@ -29,6 +29,8 @@ zcomet load agkozak/zsh-z
 export ZSHZ_SOURCE
 whence -v zshz | sed 's/zshz is a shell function from //' | read ZSHZ_SOURCE
 
+zcomet trigger zhooks agkozak/zhooks
+
 # Include some standard functionality form OMZ
 zcomet load ohmyzsh/ohmyzsh lib completion.zsh directories.zsh functions.zsh history.zsh key-bindings.zsh misc.zsh
 
@@ -52,11 +54,11 @@ zcomet load Aloxaf/fzf-tab
 # Some stuff from zsh-users
 zcomet load zsh-users/zsh-syntax-highlighting
 zcomet load zsh-users/zsh-completions
-zcomet load zsh-users/zsh-history-substring-search 
-#bindkey '^[[A' history-substring-search-up
-#bindkey '^[[B' history-substring-search-down
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
+# zcomet load zsh-users/zsh-history-substring-search 
+# bindkey '^[[A' history-substring-search-up
+# bindkey '^[[B' history-substring-search-down
+# bindkey "$terminfo[kcuu1]" history-substring-search-up
+# bindkey "$terminfo[kcud1]" history-substring-search-down
 
 # zcomet load zsh-users/zsh-autosuggestions
 
