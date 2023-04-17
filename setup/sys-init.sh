@@ -34,6 +34,11 @@ asdf-direnv-setup() {
     touch $HOME/.envrc
 }
 
+echo ### Cloning zcomet
+if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
+  command git clone https://github.com/agkozak/zcomet.git ${ZDOTDIR:-${HOME}}/.zcomet/bin
+fi
+
 #echo "Linking dot files..."
 #linkdot "p10k.zsh"
 

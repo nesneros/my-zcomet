@@ -13,13 +13,6 @@ elif [[ "$MY_ZCOMET" != "${0:h:h}" ]]; then
   read && return 1
 fi
 
-if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
-  command git clone https://github.com/agkozak/zcomet.git ${ZDOTDIR:-${HOME}}/.zcomet/bin
-fi
 source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
-
-# Make the ZCOMET_SOURCE variable available to all scripts so it can be sourced to make zcomet available
-export ZCOMET_SOURCE=$ZCOMET[SCRIPT]
-export MY_ZCOMET
 
 zcomet load "$MY_ZCOMET"
