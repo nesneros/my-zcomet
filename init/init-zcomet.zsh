@@ -20,3 +20,7 @@ export ZCOMET_SOURCE=$ZCOMET[SCRIPT]
 export MY_ZCOMET
 
 zcomet load "$MY_ZCOMET"
+
+# Remove duplicates and non-existant directories from PATH 
+# This should not be done before the zcomet plugin is completely loaded
+path-cleanup

@@ -1,0 +1,6 @@
+# Remove non-existing dirs from path
+setopt EXTENDED_GLOB
+path=(${^path}(N))
+
+# Remove duplicates from PATH
+builtin typeset -U path
