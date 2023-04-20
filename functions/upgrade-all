@@ -10,7 +10,7 @@ _asdf_latest() {
 _gen-comp() {
     cmd=$2
     destFile="$1/_$cmd"
-    (( ${+commands[${cmd}]} )) || return
+    # (( ${+commands[${cmd}]} )) || return
     echo "completion ${cmd} -> ${destFile}"
     $cmd completion zsh >"$destFile"
 }
@@ -23,40 +23,53 @@ _upgrade-completions() {
     _gen-comp $destDir kubectl
 }
 
-if hash apt-get &>/dev/null; then
-    print "\n--- Upgrading APT packages ---"
-    sudo apt-get update && sudo apt-get upgrade
-fi
+{
+    setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
 
-if hash brew &>/dev/null; then
-    print "\n--- Upgrading brews ---"
-    # brew upgrade --cask --greedy
-    brew upgrade --cask
-    brew upgrade
-    brew cleanup
-fi
+    if [[ -n "$ZCOMET_SOURCE" ]]; then
+        source "$ZCOMET_SOURCE"
+        # print "\n--- Upgrade zcomet ---"
+        ({
+            zcomet self-update
+            zcomet update
+        } 2>&1 |
+            sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' |
+            grep --line-buffered -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" | sed -u 's/^/zcomet: /') &
+    fi
 
-if hash asdf >/dev/null; then
-    print "\n--- Upgrading asdf plugins ---"
-    asdf plugin-update --all | grep -v "Already on '\|Your branch is up to date with"
+    if hash apt-get &>/dev/null; then
+        print "\n--- Upgrading APT packages ---"
+        sudo apt-get update && sudo apt-get upgrade
+    fi
 
-    _asdf_latest golang
-    # _asdf_latest direnv
-fi
+    if hash brew &>/dev/null; then
+        # print "\n--- Upgrading brews ---"
+        # brew upgrade --cask --greedy
+        (
+            {
+                brew upgrade --cask
+                brew upgrade
+                brew cleanup
+            } | sed 's/^/brew: /'
+        ) &
+    fi
 
-if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
-    print "\n--- Upgrading kubectl krew ---"
-    kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /'
-fi
+    if hash asdf >/dev/null; then
+        # print "\n--- Upgrading asdf plugins ---"
+        asdf plugin-update --all | grep -v "Already on '\|Your branch is up to date with" | sed -u 's/^/asdf: /'
 
-if [[ -n "$ZCOMET_SOURCE" ]]; then
-    source "$ZCOMET_SOURCE"
-    print "\n--- Upgrade zcomet ---"
-    { zcomet self-update ; zcomet update } 2>&1   \
-        | sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' \
-        | grep -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$"
-fi
+        _asdf_latest golang
+        # _asdf_latest direnv
+    fi
 
-print "\n--- Upgrade completions ---"
-_upgrade-completions
+    if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
+        #print "\n--- Upgrading kubectl krew ---"
+        (kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') &
+    fi
+
+    # print "\n--- Upgrade completions ---"
+    _upgrade-completions
+    wait
+}
+
 exec zsh
