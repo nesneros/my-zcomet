@@ -2,21 +2,23 @@
 
 set -e
 
+# With -q option don't print error for missing token file and return with code 0
+if [[ "$1" == "-q" ]]; then
+    quiet=1
+    shift
+fi
+
 name=$1
-[ -z "$name" ] && echo "Usage: $0 <name>" >/dev/stderr && exit 1
+[[ -z "$name" ]] && echo "Usage: $0 <name>" >/dev/stderr && exit 1
 
 fileBaseName=".${name}_token.asc"
 
-searchDirs=($HOME $HOME/Documents)
-for dir in $searchDirs; do
-    if [ -d "$dir" ]; then
-        file="$dir/$fileBaseName"
-        if [ -f "$file" ]; then
-            gpg -d "$file" 2>/dev/null
-            exit 0
-        fi
-    fi
+for file in {$HOME,$HOME/Documents}/${fileBaseName}(.N); do
+    gpg -d "$file" 2>/dev/null
+    exit 0
 done
 
-echo "Missing '$name' API-token" >/dev/stderr
-exit 1
+if [[ -z "$quiet" ]]; then
+    echo "Missing '$name' API-token" >/dev/stderr
+    exit 1
+fi
