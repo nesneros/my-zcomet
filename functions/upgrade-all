@@ -24,6 +24,7 @@ _upgrade-completions() {
 }
 
 {
+    # Silence job info
     setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
 
     if [[ -n "$ZCOMET_SOURCE" ]]; then
@@ -34,7 +35,7 @@ _upgrade-completions() {
             zcomet update
         } 2>&1 |
             sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' |
-            grep --line-buffered -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" | sed -u 's/^/zcomet: /') &
+            grep --line-buffered -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" | sed -u "s/^/zcomet: /" ) &
     fi
 
     if hash apt-get &>/dev/null; then
@@ -56,7 +57,7 @@ _upgrade-completions() {
 
     if hash asdf >/dev/null; then
         # print "\n--- Upgrading asdf plugins ---"
-        asdf plugin-update --all | grep -v "Already on '\|Your branch is up to date with" | sed -u 's/^/asdf: /'
+        (asdf plugin-update --all | grep --line-buffered -v "Already on '\|Your branch is up to date with" | sed -u 's/^/asdf: /') &
 
         _asdf_latest golang
         # _asdf_latest direnv
@@ -64,11 +65,11 @@ _upgrade-completions() {
 
     if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
         #print "\n--- Upgrading kubectl krew ---"
-        (kubectl krew upgrade 2>&1 | grep -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') &
+        (kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') &
     fi
 
     # print "\n--- Upgrade completions ---"
-    _upgrade-completions
+    _upgrade-completions &
     wait
 }
 
