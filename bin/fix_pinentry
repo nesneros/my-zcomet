@@ -10,7 +10,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     #   echo "pinentry-program /usr/local/bin/pinentry-mac" >> ~/.gnupg/gpg-agent.conf
 
     pkill gpg-agent
-    gpg-agent --pinentry-program=$(which pinentry-mac) --daemon
+    gpg-agent --pinentry-program="$(which pinentry-mac)" --daemon
 else 
     gpg-connect-agent reloadagent /bye
 fi

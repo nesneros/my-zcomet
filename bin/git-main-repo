@@ -3,18 +3,18 @@
 set -e
 
 if [ -n "$1" ]; then
-    cd $1
+    cd "$1"
 fi
 
 dir=$(git rev-parse --git-dir --path-format=absolute)
 
-cd $dir
+cd "$dir"
 dir=$(pwd)
 
 while [ "$(git rev-parse --is-inside-git-dir 2>/dev/null)" == "true" ]; do
     last=$dir
     dir=$(dirname "$dir")
-    cd $dir
+    cd "$dir"
 done
 
-echo $last
+echo "$last"
