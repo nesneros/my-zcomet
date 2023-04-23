@@ -1,8 +1,9 @@
-local path_name=path
+arg=$1
+[[ -z "$arg" ]] && arg=path
 
 # Remove non-existing dirs from path
-setopt EXTENDED_GLOB
-path=(${^path}(N))
-
-# Remove duplicates from PATH
-builtin typeset -U "$path_name"
+{
+    setopt EXTENDED_GLOB
+    local s="${arg}=(\${^${arg}}(N))"
+    eval "$s"
+}

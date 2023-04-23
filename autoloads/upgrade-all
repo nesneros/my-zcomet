@@ -10,15 +10,14 @@ _asdf_latest() {
 _gen-comp() {
     cmd=$2
     destFile="$1/_$cmd"
-    # (( ${+commands[${cmd}]} )) || return
+    (( ${+commands[${cmd}]} )) || return
     echo "completion ${cmd} -> ${destFile}"
     $cmd completion zsh >"$destFile"
 }
 
 _upgrade-completions() {
-    destDir=/usr/local/share/zsh/site-functions
     destDir="$MY_ZCOMET/functions"
-
+    mkdir -p $destDir
     _gen-comp $destDir kubectl-krew
     _gen-comp $destDir jira
     _gen-comp $destDir kubectl

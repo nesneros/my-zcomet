@@ -19,4 +19,6 @@ zcomet load "$MY_ZCOMET"
 
 # Remove duplicates and non-existant directories from PATH 
 # This should not be done before the zcomet plugin is completely loaded
-path-cleanup
+path-cleanup path
+path-cleanup fpath
+path-cleanup manpath
