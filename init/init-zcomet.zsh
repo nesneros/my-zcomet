@@ -19,7 +19,7 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 
 zcomet load "$MY_ZCOMET"
 
-# Remove duplicates and non-existant directories from PATH 
+# Remove duplicates and non-existant directories from misc paths 
 # This should not be done before the zcomet plugin is completely loaded
 path-cleanup path
 path-cleanup fpath
