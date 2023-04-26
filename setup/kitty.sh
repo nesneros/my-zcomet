@@ -8,7 +8,7 @@ kittyConfDir="$HOME/.config/kitty"
 [ -d "$kittyConfDir" ] || exit 0
 
 echo "### Linking kitty config"
-echo ln -s $kittydDir $kittyConfDir || :
+echo ln -s "$kittydDir" "$kittyConfDir" || :
 
 if [ -f "$kittyConfDir/current-theme.conf" ]; then
     ln -s "$kittyConfDir/current-theme.conf" "$kittydDir" || :
