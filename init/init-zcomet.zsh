@@ -5,6 +5,8 @@
 0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 
+zstyle ':zcomet:compinit' dump-file $HOME/.cache/zcompdump_${EUID}_${OSTYPE}_${ZSH_VERSION}
+
 # Setup MY_ZCOMET to point to this plugin
 if [[ -z "$MY_ZCOMET" ]]; then
   MY_ZCOMET=${0:h:h}
