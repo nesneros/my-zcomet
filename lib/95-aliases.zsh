@@ -16,9 +16,9 @@ darvin*) ;;
 esac
 
 # Create aliases that changes system commands after compinit
-
 alias ll="ls -l"
 alias week="date +%V"
+alias c=cat
 
 alias+ pgrep -fli
 alias+ df -h
