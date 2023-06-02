@@ -12,7 +12,7 @@ zparseopts -D -E -remove=remove s:=summaryArg j:=jiraArg p:=projectArg t:=typeAr
 [[ -n "$projectArg" ]] && project=${projectArg[2]}
 [[ -n "$typeArg" ]] && type=${typeArg[2]}
 
-[[ -z "$type" ]] && type=feat
+[[ -z "$type" ]] && type=fix
 [[ -z "$project" ]] && project=$JIRA_PROJECT
 [[ -z "$project" ]] && echo "Missing project" && exit 1
 
