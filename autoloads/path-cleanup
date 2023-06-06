@@ -4,6 +4,6 @@ arg=$1
 # Remove non-existing dirs from path
 {
     setopt EXTENDED_GLOB
-    local s="${arg}=(\${^${arg}}(N))"
+    s="${arg}=(\${^${arg}}(N))"
     eval "$s"
 }
