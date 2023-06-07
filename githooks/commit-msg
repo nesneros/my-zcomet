@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e 
+
+prefix=$(git cc-prefix) ||:
+[[ -z "$prefix" ]] && exit 0
+
+msgFile="$1"
+msg=$(cat "$msgFile")
+
+# Only add prefix it it doesn't match
+if [[ "$msg" != "$prefix"* ]]; then
+    msg="${prefix}${msg}" 
+fi
+
+echo "$msg" > "$msgFile"
