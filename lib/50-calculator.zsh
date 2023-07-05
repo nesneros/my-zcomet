@@ -1,0 +1,1 @@
+zcomet load arzzen/calc.plugin.zsh
