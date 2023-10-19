@@ -1,3 +1,17 @@
+# History environment variables
+HISTFILE="${HOME}/.zsh_history"
+HISTSIZE=1200000000  # Larger than $SAVEHIST for HIST_EXPIRE_DUPS_FIRST to work
+SAVEHIST=1000000000
+
+setopt EXTENDED_HISTORY       # Save time stamps and durations
+setopt SHARE_HISTORY        # Constantly share history between shell instances
+setopt HIST_FIND_NO_DUPS      # Do not display duplicates in history
+
+setopt AUTO_CD            # Change to a directory just by typing its name
+setopt AUTO_PUSHD         # Make cd push each old directory onto the stack
+setopt CDABLE_VARS        # Like AUTO_CD, but for named directories
+setopt PUSHD_IGNORE_DUPS  # Don't push duplicates onto the stack
+
 setopt COMPLETE_IN_WORD     # Complete from both ends of a word.
 setopt ALWAYS_TO_END        # Move cursor to the end of a completed word.
 setopt PATH_DIRS            # Perform path search even on command names with slashes.
