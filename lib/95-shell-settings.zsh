@@ -23,3 +23,13 @@ unsetopt MENU_COMPLETE      # Do not autoselect the first completion entry.
 unsetopt FLOW_CONTROL       # Disable start/stop characters in shell editor.
 
 zcomet compinit
+
+
+_insert-watch-at-beginning() {
+  LBUFFER="watch $LBUFFER"
+  zle reset-prompt  # Reset the prompt
+}
+
+# Bind a keyboard shortcut to the custom widget
+zle -N _insert-watch-at-beginning
+bindkey '^W^W' _insert-watch-at-beginning
