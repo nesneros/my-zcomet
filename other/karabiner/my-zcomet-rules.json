@@ -2,7 +2,7 @@
     "title": "my-zcomet: Change shift key",
     "rules": [
         {
-            "description": "Post control-shift-enter if left_shift is pressed alone.",
+            "description": "left_shift alone -> control-shift-spacebar",
             "manipulators": [
                 {
                     "from": {
@@ -20,7 +20,7 @@
                     ],
                     "to_if_alone": [
                         {
-                            "key_code": "return_or_enter",
+                            "key_code": "spacebar",
                             "modifiers": [
                                 "left_control",
                                 "left_shift"
@@ -32,7 +32,7 @@
             ]
         },
         {
-            "description": "Post shift-enter if right_shift is pressed alone.",
+            "description": "right_shift alone -> control-shift-enter",
             "manipulators": [
                 {
                     "from": {
@@ -52,6 +52,7 @@
                         {
                             "key_code": "return_or_enter",
                             "modifiers": [
+                                "left_control",
                                 "right_shift"
                             ]
                         }
@@ -61,7 +62,37 @@
             ]
         },
         {
-            "description": "Post option-command-enter if right_command is pressed alone.",
+            "description": "left_command alone -> control-command-spacebar",
+            "manipulators": [
+                {
+                    "from": {
+                        "key_code": "left_command",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_command"
+                        }
+                    ],
+                    "to_if_alone": [
+                        {
+                            "key_code": "spacebar",
+                            "modifiers": [
+                                "left_control",
+                                "left_command"
+                            ]
+                        }
+                    ],
+                    "type": "basic"
+                }
+            ]
+        },
+        {
+            "description": "right_command alone -> control-command-enter",
             "manipulators": [
                 {
                     "from": {
@@ -81,39 +112,8 @@
                         {
                             "key_code": "return_or_enter",
                             "modifiers": [
-
-                                "right_command",
-                                "right_option"
-                            ]
-                        }
-                    ],
-                    "type": "basic"
-                }
-            ]
-        },
-        {
-            "description": "Post control-command-enter if left_command is pressed alone.",
-            "manipulators": [
-                {
-                    "from": {
-                        "key_code": "left_command",
-                        "modifiers": {
-                            "optional": [
-                                "any"
-                            ]
-                        }
-                    },
-                    "to": [
-                        {
-                            "key_code": "left_command"
-                        }
-                    ],
-                    "to_if_alone": [
-                        {
-                            "key_code": "return_or_enter",
-                            "modifiers": [
                                 "left_control",
-                                "left_command"
+                                "right_command"
                             ]
                         }
                     ],
