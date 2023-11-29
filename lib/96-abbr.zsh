@@ -17,11 +17,11 @@ _alias_to_abbr k
 _alias_to_abbr kc
 
 # If zsh-z exists as function create an abbr to it
-if whence -v zshz > /dev/null ; then
-    abbr --session ,="zshz" > /dev/null
-fi
+# if whence -v zshz > /dev/null ; then
+#     abbr --session ,="zshz" > /dev/null
+# fi
 
+abbr --session "git p"="git pull" > /dev/null
 abbr --session "git w"="git wt-setup" > /dev/null
 abbr --session "git r"="git wt-setup --remove" > /dev/null
 
-abbr --session --global ',=$(zshz -e' > /dev/null
