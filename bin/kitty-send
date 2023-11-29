@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage() {
+    echo "Usage: $0 <scope> <text>"
+    echo "  scope: all, osWindow, tab"
+    echo "Options:"
+    echo "  --clear:    clear any existing text in remove Kitty windows"
+    echo "  --new-line: add a new line after the text"
+    echo "  --skip-me:  do not send text to the current window"
+    echo "  --command:  Shortcut for --clear and --new-line"
+    exit 1
+}
+
+# Parse options
+clear=false
+newLine=false
+skipMe=false
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --clear)
+            clear=true
+            ;;
+        --new-line)
+            newLine=true
+            ;;
+        --skip-me)
+            skipMe=true
+            ;;
+        --command)
+            clear=true
+            newLine=true
+            ;;
+        *)
+            break
+            ;;
+    esac
+    shift
+done
+
+[ -z "$1" ] && usage
+scope="$1"
+shift
+text="$*"
+
+# Adjust text acording to options
+clearSequence='\x01\x0B'
+$clear && text="${clearSequence}${text}"
+$newLine && text="${text}\n"
+
+# Iterate over Kitty windows
+# TODO Handle non-zero exit code from kitty-window-ids
+set -o pipefail
+kitty-window-ids "$scope" | while read -r id; do 
+    # Skip current window if requested
+    $skipMe && [ "$id" = "$KITTY_WINDOW_ID" ] && continue
+    kitty @ send-text --match "id:$id" "$text"
+done  
+
+

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+text="$*"
+[ -z "$text" ] && echo "Usage: $0 <text>" && exit 1
+matchQuery=$(kitty-window-ids -q osWindow)
+kitty @ create-marker --match "$matchQuery" itext 2 "$text"
