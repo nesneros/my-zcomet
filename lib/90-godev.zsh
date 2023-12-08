@@ -27,3 +27,6 @@ export GOTRACEBACK=1
 
 # See https://pkg.go.dev/runtime for values for GODEBUG
 export GODEBUG=""
+
+export GOPATH="$HOME/go"
+export PATH="$PATH:$GOPATH/bin"
