@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage() {
+    echo "Usage: $0 <scope>"
+    echo "  scope: all, osWindow, tab"
+    echo "Options:"
+    echo " --skip-me:  do not include id of current window"
+    echo " -q, --as-query: output as a query string that can be used as arg to the --match option of kitty"
+    echo " -h, --help:  print this help message"
+}
+
+# Parse options
+skipMe=false
+asQuery=false
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --skip-me)
+        skipMe=true
+        shift
+        ;;
+    -q | --as-query)
+        asQuery=true
+        shift
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    *)
+        break
+    esac
+done
+
+[ -z "$1" ] && usage
+# KITTY_WINDOW_ID is the current Kitty Window. Check if it defined (error if not), and use it in the jq query
+[ -z "$KITTY_WINDOW_ID" ] && echo "KITTY_WINDOW_ID is not defined" && exit 1
+
+osWindowQuery='.[] | select(.tabs[] | .windows | any(.id == '${KITTY_WINDOW_ID}'))'
+tabQuery='| .tabs |= [.[] | select(.windows[].id == '${KITTY_WINDOW_ID}')]'
+
+scope="$1"
+case "$scope" in
+all)
+    query='.[]'
+    ;;
+osWindow)
+    query="${osWindowQuery}"
+    ;;
+tab)
+    query="${osWindowQuery} ${tabQuery}"
+    ;;
+*)
+    echo "Invalid scope: $scope" >&2
+    exit 1
+    ;;
+esac
+onlyIdQuery='| .tabs[].windows[].id'
+kitty @ ls | jq "${query} ${onlyIdQuery}" |
+    if $skipMe; then grep -v "${KITTY_WINDOW_ID}"; else cat; fi |
+    if $asQuery; then ( sed 's/^/id:/' | sed -e :a -e '$!N; s/\n/ or /; ta' ) ; else cat; fi
