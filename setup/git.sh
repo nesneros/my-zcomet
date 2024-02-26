@@ -28,11 +28,15 @@ gc color.ui auto
 gc core.pager cat
 gc core.hookspath "$MY_ZCOMET/githooks"
 gc fetch.prune true
+gc rerere.enabled true
+gc column.ui auto
+gc branch.sort -committerdate
 
 alias aliases "!git config --get-regexp alias | sed -re 's/^alias\.([a-z-]+) /\1:\t/g' | column -t -s $'\t'"
 alias s "status --short"
 alias lg "log --graph --date=relative --pretty=tformat:'%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%an %ad)%Creset'"
 alias wt "worktree"
+alias staash "stash --all"
 
 alias hide "update-index --assume-unchanged"
 alias hide-all "!git diff --name-only | xargs git hide"
