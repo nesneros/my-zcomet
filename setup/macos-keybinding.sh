@@ -1,3 +1,10 @@
+#!/bin/sh
+
+set -e
+
+mkdir -p $HOME/Library/KeyBindings
+
+cat << EOF > $HOME/Library/KeyBindings/DefaultKeyBinding.dict
 /*
     Key Modifiers 
     ^ : Ctrl 
@@ -31,3 +38,5 @@
   "^$\UF729" = moveToBeginningOfDocumentAndModifySelection:; // Ctrl + Shift + Home
   "^$\UF72B" = moveToEndOfDocumentAndModifySelection:; // Ctrl + Shift + End
 }
+EOF
+
