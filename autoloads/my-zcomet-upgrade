@@ -52,7 +52,7 @@ _upgrade-completions() {
                 brew upgrade
                 brew cleanup
             } | sed 's/^/brew: /'
-        ) &
+        ) # &
     fi
 
     if hash asdf >/dev/null; then
@@ -70,7 +70,7 @@ _upgrade-completions() {
 
     # print "\n--- Upgrade completions ---"
     _upgrade-completions # &
-    wait
+    # wait
 }
 
 exec zsh
