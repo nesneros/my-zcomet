@@ -2,7 +2,9 @@
 export ZCOMET_SOURCE=$ZCOMET[SCRIPT]
 export MY_ZCOMET
 export PATH=$MY_ZCOMET/bin:$PATH
+export FPATH=$MY_ZCOMET/functions/generated:$FPATH
 
+echo BOOM
 autoload -Uz $MY_ZCOMET/autoloads/*
 
 # Load lib folder

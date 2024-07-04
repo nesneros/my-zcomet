@@ -16,7 +16,7 @@ _gen-comp() {
 }
 
 _upgrade-completions() {
-    destDir="$MY_ZCOMET/functions"
+    destDir="$MY_ZCOMET/functions/generated"
     mkdir -p $destDir
     _gen-comp $destDir jira
     _gen-comp $destDir kubectl
