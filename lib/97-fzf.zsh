@@ -42,4 +42,4 @@ _fzf_comprun() {
 
 source <(fzf --zsh)
 
-zcomet load Aloxaf/fzf-tab
+zcomet snippet https://github.com/junegunn/fzf-git.sh/blob/master/fzf-git.sh
