@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
 set -e
-text="$*"
-[ -z "$text" ] && echo "Usage: $0 <text>" && exit 1
+
+if [ -t 0 ]; then
+    text="$*"
+    if [ -z "$text" ]; then
+        # use clip
+        text="$(pbpaste)"
+    fi
+else 
+    text="$(cat)"
+fi
+
 matchQuery=$(kitty-window-ids -q osWindow)
 kitty @ create-marker --match "$matchQuery" iregex 3 "\\b(ERROR|FATAL)\\b" 2 "\\bWARN(ING)?\\b" 1 "$text" 
