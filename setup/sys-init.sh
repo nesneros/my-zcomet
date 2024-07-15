@@ -50,10 +50,6 @@ git config --global core.excludesfile $(
 
 asdf-direnv-setup
 
-echo "### Setup NVIM"
-git clone --depth 1 https://github.com/wbthomason/packer.nvim "$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim" ||:
-ln -sf "$dotFilesDir/nvim" "$HOME/.config/nvim"
-
 echo "### Installing TPM"
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm ||:
 
