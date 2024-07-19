@@ -63,10 +63,6 @@ _upgrade-completions() {
         # _asdf_latest direnv
     fi
 
-    print "\n--- Update NVIM ---"
-    git clone https://github.com/wbthomason/packer.nvim "$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim" || git pull -C "$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim"
-    ln -sf "$dotFilesDir/nvim" "$HOME/.config/"
-
     if hash kubectl &>/dev/null && [ -d $HOME/.krew/bin ]; then
         #print "\n--- Upgrading kubectl krew ---"
         (kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') # &
