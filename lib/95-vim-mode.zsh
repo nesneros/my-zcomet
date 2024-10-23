@@ -1,3 +1,5 @@
+return 
+
 zcomet load ohmyzsh plugins/vi-mode
 
 # Yank to the system clipboard
