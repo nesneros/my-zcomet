@@ -1,3 +1,7 @@
+# Make a few vim like key bindings
+bindkey "^j" down-line-or-beginning-search
+bindkey "^k" up-line-or-beginning-search
+
 return 
 
 zcomet load ohmyzsh plugins/vi-mode
