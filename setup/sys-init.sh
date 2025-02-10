@@ -31,7 +31,7 @@ asdf-direnv-setup() {
     popd
     ln -sf "$dotFilesDir/direnvrc" "$HOME/.config/direnv/direnvrc" || :
     ln -sf "$dotFilesDir/direnv.toml" "$HOME/.config/direnv/direnv.toml" || :
-    touch "$HOME/.envrc"
+    # touch "$HOME/.envrc"
 }
 
 echo ### Cloning zcomet
