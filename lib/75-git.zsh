@@ -22,13 +22,11 @@ if (( ${+commands[glab]} )) ; then
 fi
 
 # Used by hub (and maybe others)
-if tmp=$(api-token github 2> /dev/null) ; then
-    export GITHUB_TOKEN=$tmp
-fi
+# if tmp=$(api-token github 2> /dev/null) ; then
+#     export GITHUB_TOKEN=$tmp
+#fi
 
 if (( ${+commands[gh]} )); then
     # eval $(gh completion -s zsh)
     alias gh_auth="api-token github | gh auth login --with-token && gh auth status"
 fi
-
-alias g=git

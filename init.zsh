@@ -8,6 +8,7 @@ autoload -Uz $MY_ZCOMET/autoloads/*
 
 # Load lib folder
 for config_file ($MY_ZCOMET/lib/*.zsh); do
+    # echo "Loading $config_file..."
     source $config_file
 done
 unset config_file
