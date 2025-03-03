@@ -23,6 +23,7 @@ _alias_to_abbr kc
 
 abbr --session "git p"="git pull" > /dev/null
 abbr --session "git c"="git checkout" > /dev/null
+abbr --session "git checkout m"="git checkout master" > /dev/null
 abbr --session "git w"="git wt-setup" > /dev/null
 abbr --session "git r"="git wt-setup --remove" > /dev/null
 
