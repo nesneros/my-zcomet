@@ -57,7 +57,7 @@ _upgrade-completions() {
 
     if hash asdf >/dev/null; then
         # print "\n--- Upgrading asdf plugins ---"
-        (asdf plugin-update --all | grep --line-buffered -v "Already on '\|Your branch is up to date with" | sed -u 's/^/asdf: /') # &
+        (asdf plugin update --all | grep --line-buffered -v "Already on '\|Your branch is up to date with" | sed -u 's/^/asdf: /') # &
 
         # _asdf_latest golang
         # _asdf_latest direnv
