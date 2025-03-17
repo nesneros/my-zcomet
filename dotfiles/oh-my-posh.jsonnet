@@ -48,14 +48,10 @@ local plain(x) = { style: 'plain'} + x;
             '{{ if gt .Ahead 0 }}#B388FF{{ end }}',
             '{{ if gt .Behind 0 }}#B388FB{{ end }}',
           ],
-          template: ' {{ .UpstreamIcon }} {{ .HEAD }} {{if .BranchStatus }}{{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}',
+          template: ' {{ .UpstreamIcon }} {{ .HEAD }} {{ .LatestTag }} {{if .BranchStatus }}{{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}  {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}  {{ .Staging.String }}{{ end }}',
           properties: {
             fetch_status: true,
             fetch_upstream_icon: true,
-            untracked_modes: {
-              '/Users/user/Projects/oh-my-posh/': 'no',
-            },
-            source: 'cli',
             mapped_branches: {
               'feat/*': '🚀 ',
               'bug/*': '🐛 ',
