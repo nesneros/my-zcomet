@@ -39,6 +39,11 @@ if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
   command git clone https://github.com/agkozak/zcomet.git "${ZDOTDIR:-${HOME}}/.zcomet/bin"
 fi
 
+echo "### Setup Mise"
+mkdir -p "$HOME/.config/mise/conf.d"
+ln -sf "$dotFilesDir/mise-global.toml" "$HOME/.config/mise/conf.d/my-zcomet.toml"
+mise install
+
 #echo "Linking dot files..."
 #linkdot "p10k.zsh"
 
@@ -48,9 +53,9 @@ git config --global core.excludesfile $(
     pwd
 )/gitignore_global
 
-asdf-direnv-setup
+# asdf-direnv-setup
 
-echo "### Installing TPM"
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm ||:
+# echo "### Installing TPM"
+# git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm ||:
 
 ./setup/hook-login-script.sh
