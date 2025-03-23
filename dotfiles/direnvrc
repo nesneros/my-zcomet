@@ -1,9 +1,0 @@
-# File: ~/.config/direnv/direnvrc
- 
-# if [ -f .envrc ] && grep -q "^#--FULL-LOG--$" .envrc ; then
-#     DIRENV_LOG_FORMAT="%s"
-# else
-#     DIRENV_LOG_FORMAT=""
-# fi
-
-#use asdf

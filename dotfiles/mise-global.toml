@@ -3,6 +3,8 @@ age = "latest"
 go = "latest"
 "go:github.com/maruel/panicparse/v2" = "latest"
 # "go:golang.org/x/tools/..." = "latest"
+jq = "latest"
+python = "3.13"
 sops = "latest"
 
 [settings]
