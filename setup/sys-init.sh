@@ -26,8 +26,8 @@ if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
 fi
 
 echo "### Setup Mise"
-mkdir -p "$HOME/.config/mise/conf.d"
-ln -sf "$dotFilesDir/mise-global.toml" "$HOME/.config/mise/conf.d/my-zcomet.toml"
+mkdir -p "$HOME/.config/mise"
+ln -sf "$dotFilesDir/mise-global.toml" "$HOME/.config/mise/config.toml"
 mise install
 
 #echo "Linking dot files..."
