@@ -1,13 +1,9 @@
 [tools]
-age = "latest"
 go = "latest"
 "go:github.com/maruel/panicparse/v2" = "latest"
 # "go:golang.org/x/tools/..." = "latest"
-jq = "latest"
+
 python = "3.13"
-slsa-verifier = "latest"
-sops = "latest"
-cosign = "latest"
 
 [settings]
 experimental = true

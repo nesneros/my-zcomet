@@ -22,6 +22,15 @@ brew "tmux"
 brew "watch"
 brew "wget"
 brew "eth-p/software/bat-extras"
+
+# Used to mange Mise secrets
+brew "age"
+brew "sops"
+
+# Used to verify Mise installs (gpg also needed)
+brew "cosign"
+brew "slsa-verifier"
+
 #cask "appcleaner"
 #cask "authy"
 #cask "cloudmounter"
