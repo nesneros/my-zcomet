@@ -12,6 +12,7 @@ _upgrade-completions() {
     _gen-comp "$destDir" jira
     _gen-comp "$destDir" kubectl
     _gen-comp "$destDir" orbctl
+    _gen-comp "$destDir" golangci-lint
 }
 
 {
