@@ -1,7 +1,9 @@
-(( ${+commands[jira]} )) || return
+hash jira &>/dev/null || return
 
-if tmp=$(api-token jira 2> /dev/null) ; then
-    export JIRA_API_TOKEN=$tmp
+if [[ -z "$JIRA_API_TOKEN" ]]; then
+    if tmp=$(api-token jira 2> /dev/null) ; then
+        export JIRA_API_TOKEN=$tmp
+    fi
 fi
 
 jira() {
@@ -38,3 +40,4 @@ jira-summary() {
     id=$(_jira_issue_id $1) || return 1
     jira issue view $id | grep '^  #' | sed 's/^  # *//'
 }
+
