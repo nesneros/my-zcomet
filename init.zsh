@@ -7,8 +7,12 @@ export FPATH=$MY_ZCOMET/functions/generated:$FPATH
 autoload -Uz $MY_ZCOMET/autoloads/*
 
 # Load lib folder
+
+zcomet load agkozak/zsh-z
 for config_file ($MY_ZCOMET/lib/*.zsh); do
     # echo "Loading $config_file..."
+    # start_time=$EPOCHREALTIME
     source $config_file
+    # echo "$EPOCHREALTIME - $start_time" | bc
 done
 unset config_file
