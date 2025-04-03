@@ -2,6 +2,9 @@
 # If zcomet is not installed it will be cloned.
 # Then continue to load this as a zcomet plugin
 
+zmodload zsh/datetime
+start_time="$EPOCHREALTIME"
+
 0="${ZERO:-${${0:#$ZSH_ARGZERO}:-${(%):-%N}}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 
@@ -56,3 +59,7 @@ cleanup-path() {
 cleanup-path PATH
 cleanup-path FPATH
 cleanup-path MANPATH
+
+end_time="$EPOCHREALTIME"
+
+printf "Startup time: %.0f ms\n" $(( 1000 * ( $end_time - $start_time ) ))
