@@ -6,6 +6,10 @@ export FPATH=$MY_ZCOMET/functions/generated:$FPATH
 
 autoload -Uz $MY_ZCOMET/autoloads/*
 
+func alias+() {
+    alias "$1"="${aliases[$1]:-$1} $argv[2,-1]"
+}
+
 # Load lib folder
 
 zcomet load agkozak/zsh-z
