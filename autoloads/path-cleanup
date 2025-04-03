@@ -1,9 +1,0 @@
-arg=$1
-[[ -z "$arg" ]] && arg=path
-
-# Remove non-existing dirs from path
-{
-    setopt EXTENDED_GLOB
-    s="${arg}=(\${^${arg}}(N))"
-    eval "$s"
-}
