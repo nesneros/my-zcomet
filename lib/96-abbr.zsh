@@ -15,6 +15,7 @@ _alias_to_abbr df
 _alias_to_abbr g
 _alias_to_abbr k
 _alias_to_abbr kc
+_alias_to_abbr mr
 
 # If zsh-z exists as function create an abbr to it
 # if whence -v zshz > /dev/null ; then

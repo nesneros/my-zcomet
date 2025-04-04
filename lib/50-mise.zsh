@@ -7,3 +7,5 @@ if [[ -f "$HOME/.config/mise/age.txt" ]]; then
 fi
 
 eval "$(mise activate zsh)"
+
+alias mr="mise run"
