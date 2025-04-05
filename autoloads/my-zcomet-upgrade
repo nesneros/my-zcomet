@@ -61,6 +61,8 @@ _upgrade-completions() {
     # print "\n--- Upgrade completions ---"
     _upgrade-completions # &
     # wait
+
+    generate-source-cache
 }
 
 exec zsh

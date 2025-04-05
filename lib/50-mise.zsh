@@ -6,6 +6,7 @@ if [[ -f "$HOME/.config/mise/age.txt" ]]; then
     export MISE_SOPS_AGE_KEY_FILE="$HOME/.config/mise/age.txt"
 fi
 
-eval "$(mise activate zsh)"
+# Is in source_cache
+# eval "$(mise activate zsh)"
 
 alias mr="mise run"

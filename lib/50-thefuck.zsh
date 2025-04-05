@@ -2,7 +2,8 @@ if [[ -z $commands[thefuck] ]]; then
     return
 fi
 
-eval $(thefuck --alias)
+# Is in source_cache
+# eval $(thefuck --alias)
 
 fuck-command-line() {
     local FUCK="$(THEFUCK_REQUIRE_CONFIRMATION=0 thefuck $(fc -ln -1 | tail -n 1) 2> /dev/null)"

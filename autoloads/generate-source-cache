@@ -1,0 +1,26 @@
+_add_source_cache() {
+    # Just the first arg
+    local cmd="$1"
+    if hash "$cmd" &>/dev/null; then
+        echo "Adding $@ to source cache"
+        echo "### BEGIN $@" >>"$source_cache"
+        "$@" >>"$source_cache"
+        echo "### END $@" >>"$source_cache"
+        echo >>"$source_cache"
+    else
+        echo "Skipping $cmd"
+    fi
+}
+
+echo "Generating source cache..."
+
+source_cache="$MY_ZCOMET/source_cache"
+rm "$source_cache" 2>/dev/null || :
+
+printf "# Generated at %s\n\n" "$(date)" >>"$source_cache"
+
+_add_source_cache batpipe
+_add_source_cache thefuck --alias
+_add_source_cache mise activate zsh
+
+source "$source_cache"

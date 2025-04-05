@@ -1,0 +1,1 @@
+[[ -f $MY_ZCOMET/source_cache ]] &&  source $MY_ZCOMET/source_cache

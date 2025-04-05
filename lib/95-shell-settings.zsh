@@ -26,8 +26,6 @@ setopt EXTENDED_GLOB        # Needed for file modification glob modifiers with c
 unsetopt MENU_COMPLETE      # Do not autoselect the first completion entry.
 unsetopt FLOW_CONTROL       # Disable start/stop characters in shell editor.
 
-zcomet compinit
-
 _insert-watch-at-beginning() {
   LBUFFER="watch $LBUFFER"
   zle reset-prompt  # Reset the prompt
