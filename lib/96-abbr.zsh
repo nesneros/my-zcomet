@@ -6,7 +6,7 @@ source "$abbrfile"
 _alias_to_abbr() {
     name="$1"
     if x=$(alias "$name") ; then
-        eval "$(echo "$x" | sed 's/^/abbr --session /')" > /dev/null
+        eval "abbr --session $x" > /dev/null
     fi
 }
 
