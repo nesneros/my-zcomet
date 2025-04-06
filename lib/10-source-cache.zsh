@@ -1,0 +1,1 @@
+[[ -f $MY_ZCOMET/generated/source_cache.zsh ]] &&  source $MY_ZCOMET/generated/source_cache.zsh

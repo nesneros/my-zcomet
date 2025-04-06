@@ -2,7 +2,7 @@
 export ZCOMET_SOURCE=$ZCOMET[SCRIPT]
 export MY_ZCOMET
 export PATH=$MY_ZCOMET/bin:$HOME/share/bin:$HOME/bin:$PATH
-export FPATH=$MY_ZCOMET/functions/generated:$FPATH
+export FPATH=$MY_ZCOMET/generated/generated:$FPATH
 
 autoload -Uz $MY_ZCOMET/autoloads/*
 

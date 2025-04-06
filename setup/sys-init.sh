@@ -43,3 +43,6 @@ git config --global core.excludesfile $(
 # git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm ||:
 
 ./setup/hook-login-script.sh
+
+./setup/generate-source-cache.sh
+

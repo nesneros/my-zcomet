@@ -1,4 +1,5 @@
 setup/Brewfile.lock.json
 lib/*.local.*
 *.zwc
-source_cache
+generated/
+

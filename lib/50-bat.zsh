@@ -1,9 +1,2 @@
-if (( ! ${+commands[batpipe]} )); then
-  return
-fi
-
-# Is in source_cache
-# eval $(batpipe)
-
-alias man=batman
-alias cat=bat
+hash bat &>/dev/null && alias cat=bat
+hash batman &>/dev/null && alias man=batman

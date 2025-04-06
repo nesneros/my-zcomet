@@ -7,7 +7,7 @@ _gen-comp() {
 }
 
 _upgrade-completions() {
-    destDir="$MY_ZCOMET/functions/generated"
+    destDir="$MY_ZCOMET/generated/functions"
     mkdir -p "$destDir"
     _gen-comp "$destDir" jira
     _gen-comp "$destDir" kubectl
@@ -62,7 +62,7 @@ _upgrade-completions() {
     _upgrade-completions # &
     # wait
 
-    generate-source-cache
+    "$MY_ZCOMET/setup/generate-source-cache"
 }
 
 exec zsh
