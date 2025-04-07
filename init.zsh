@@ -15,10 +15,10 @@ func alias+() {
 zcomet load agkozak/zsh-z
 for config_file ($MY_ZCOMET/lib/*.zsh); do
     # echo "Loading $config_file..."
-    local start_time=$EPOCHREALTIME
+    [[ $PROFILING ]] && local start_time=$EPOCHREALTIME
     source $config_file
-    local end_time=$EPOCHREALTIME
-    # printf "%3.0f : $config_file\n" $(( 1000 * ( $end_time - $start_time )  ))
+    [[ $PROFILING ]] && local end_time=$EPOCHREALTIME
+    [[ $PROFILING ]] && printf "%3.f : $config_file\n" $(( 1000 * ( $end_time - $start_time )  ))
 done
 
 unset config_file

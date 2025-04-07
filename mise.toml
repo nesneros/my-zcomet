@@ -1,5 +1,9 @@
+[env]
+# PROFILING = "1" # Enable profiling
+
 [tools]
 go-jsonnet = "latest"
+usage = "latest"
 
 [[watch_files]]
 patterns = ["dotfiles/oh-my-posh.jsonnet"]
