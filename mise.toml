@@ -3,7 +3,7 @@
 
 [tools]
 go-jsonnet = "latest"
-usage = "latest"
+# usage = "latest"
 
 [[watch_files]]
 patterns = ["dotfiles/oh-my-posh.jsonnet"]
