@@ -7,4 +7,3 @@ set -e
 if mise tasks | grep -e '^post-merge$' > /dev/null; then
     mise run post-merge
 fi
-x
