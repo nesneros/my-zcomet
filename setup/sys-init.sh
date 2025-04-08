@@ -30,9 +30,6 @@ mkdir -p "$HOME/.config/mise"
 ln -sf "$dotFilesDir/mise-global.toml" "$HOME/.config/mise/config.toml"
 mise install
 
-#echo "Linking dot files..."
-#linkdot "p10k.zsh"
-
 echo "### Define global gitignore"
 git config --global core.excludesfile $(
     cd "$(dirname $0)"

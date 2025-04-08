@@ -2,9 +2,9 @@
 
 set -e
 
-mkdir -p $HOME/Library/KeyBindings
+mkdir -p "$HOME/Library/KeyBindings"
 
-cat << EOF > $HOME/Library/KeyBindings/DefaultKeyBinding.dict
+cat << EOF > "$HOME/Library/KeyBindings/DefaultKeyBinding.dict"
 /*
     Key Modifiers 
     ^ : Ctrl 
