@@ -53,7 +53,7 @@ _upgrade-completions() {
         print -- "--- Done upgrading mise ---\n"
     fi
 
-    if hash kubectl &>/dev/null && [ -d "$HOME"/.krew/bin ]; then
+    if hash kubectl-krew &>/dev/null;  then
         #print "\n--- Upgrading kubectl krew ---"
         (kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') # &
     fi
