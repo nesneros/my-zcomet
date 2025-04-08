@@ -20,6 +20,7 @@ _upgrade-completions() {
     setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
 
     if [[ -n "$ZCOMET_SOURCE" ]]; then
+        # shellcheck disable=SC1090
         source "$ZCOMET_SOURCE"
         # print "\n--- Upgrade zcomet ---"
         ({
