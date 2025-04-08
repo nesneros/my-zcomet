@@ -1,5 +1,5 @@
 [env]
-# PROFILING = "1" # Enable profiling
+#PROFILING = "1" # Enable profiling
 
 [tools]
 go-jsonnet = "latest"
