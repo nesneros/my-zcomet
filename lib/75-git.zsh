@@ -1,16 +1,18 @@
 # Completion for git extras
-if (( ${+commands[git-extras]} )) ; then
-    zcomet snippet https://github.com/tj/git-extras/blob/master/etc/git-extras-completion.zsh
-fi
+hash git-extras 2>/dev/null && zcomet snippet https://github.com/tj/git-extras/blob/master/etc/git-extras-completion.zsh
 
 # glab to interact with Gitlab
-if (( ${+commands[glab]} )) ; then
+if hash glab 2>/dev/null; then
     # local token=$(api-token gitlab)
     # $? != 0 || return
 
     glab() {
+        if [[ -n "$GITLAB_TOKEN" ]]; then
+            command glab "$@"
+            return
+        fi
         token=$(api-token -q gitlab)
-        if [ -z "$token" ]; then
+        if [[ -z "$token" ]]; then
             command glab "$@"
         else
             GITLAB_TOKEN=$token command glab "$@"
@@ -26,7 +28,7 @@ fi
 #     export GITHUB_TOKEN=$tmp
 #fi
 
-if (( ${+commands[gh]} )); then
+if hash gh 2>/dev/null; then
     # eval $(gh completion -s zsh)
     alias gh_auth="api-token github | gh auth login --with-token && gh auth status"
 fi
