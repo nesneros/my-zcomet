@@ -1,0 +1,46 @@
+#!/bin/zsh -e
+
+CLIP_DIR="$HOME/.local/share/clipstore"
+
+mkdir -p "$CLIP_DIR"
+
+usage() {
+  echo "Usage:"
+  echo "  clipstore --list           List all saved snippets"
+  echo "  clipstore --delete <name>  Delete a named snippet"
+  echo "  clipstore --help           Display this help message"
+  echo "  clipstore <name>           Intelligently save or paste the named snippet"
+}
+
+## Arguuments
+[[ $# -eq 0 ]] && usage && exit 1
+
+# Check for --help or --list
+if [[ "$1" == "--help" ]]; then
+  usage
+  exit 0
+elif [[ "$1" == "--list" ]]; then
+  ls -1 "$CLIP_DIR"
+  exit 0
+elif [[ "$1" == "--delete" ]]; then
+  [[ -z "$2" ]] && usage && exit 1
+  rm -f "$CLIP_DIR/$2"
+  echo "Deleted '$2'"
+  exit 0
+elif [[ "$1" == "--delete-all" ]]; then
+  rm -f "$CLIP_DIR"/*
+  echo "Deleted all snippets"
+  exit 0
+fi
+
+# Check if $1 begins with a - . If it does it is an error, otherwise it is a name of a snippet
+[[ "$1" == -* ]] && usage && exit 1
+
+if [[ -t 0 ]]; then
+  [[ ! -f "$CLIP_DIR/$1" ]] && echo "Invalid name: $1" && exit 1
+  cat "$CLIP_DIR/$1" | pbcopy
+  pbpaste
+else
+  pbcopy
+  pbpaste >"$CLIP_DIR/$1"
+fi
