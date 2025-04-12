@@ -1,7 +1,51 @@
-#!/usr/bin/env zsh
+#!/bin/zsh -e
 
-if [[ -t 0 ]]; then
-  pbpaste
-else
-  pbcopy
-fi
+CLIP_DIR="$HOME/.local/share/clipstore"
+
+mkdir -p "$CLIP_DIR"
+
+usage() {
+  echo "Usage:"
+  echo "  clipstore --list           List all saved snippets"
+  echo "  clipstore --delete <name>  Delete a named snippet"
+  echo "  clipstore -h or --help     Show this usage message"
+  echo "  clipstore <name>           Intelligently save or paste the named snippet"
+}
+
+noargs() {
+  if [[ -t 0 ]]; then
+    pbpaste
+  else
+    pbcopy
+  fi
+}
+[[ $# -eq 0 ]] && noargs && exit 0
+
+case "$1" in
+-h | --help)
+  usage
+  ;;
+--list)
+  ls -1 "$CLIP_DIR"
+  ;;
+--delete)
+  [[ -z "$2" ]] && usage && exit 1
+  rm -f "$CLIP_DIR/$2" && echo "Deleted '$2'"
+  ;;
+--delete-all)
+  rm -f "$CLIP_DIR/*" && echo "Deleted all snippets"
+  ;;
+-*)
+  usage && exit 1
+  ;;
+*)
+  if [[ -t 0 ]]; then
+    [[ ! -f "$CLIP_DIR/$1" ]] && echo "Invalid name: $1" && exit 1
+    cat "$CLIP_DIR/$1" | pbcopy
+    pbpaste
+  else
+    pbcopy
+    pbpaste >"$CLIP_DIR/$1"
+  fi
+  ;;
+esac
