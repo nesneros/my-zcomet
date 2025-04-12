@@ -14,5 +14,5 @@ setenv() {
     fi
 }
 
-setenv MY_ZCOMET $MY_ZCOMET
+setenv MY_ZCOMET "$MY_ZCOMET"
 setenv KITTY_CONFIG_DIRECTORY "$MY_ZCOMET/dotfiles/kitty"
