@@ -36,7 +36,7 @@ alias -g L='| less'
 alias -g S='| sort'
 alias -g T='| tail -100f'
 alias -g P='| peco'
-alias -g Z='| fzf --tac'
+alias -g Z='| fzf --height=100% --no-sort'
 # Colorize json
 alias -g J='|jq .'
 
