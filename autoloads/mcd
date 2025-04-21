@@ -1,4 +1,0 @@
-# Convenient function to create a dir and cd into it
-
-mkdir -p $1
-cd $1
