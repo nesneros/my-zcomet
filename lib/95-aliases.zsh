@@ -25,20 +25,24 @@ alias+ df -h
 
 # Some global aliases
 alias -g B='| bat'
+alias -g E='| pipeedit'
 alias -g F='| less +F'
-alias -g GREP='| grep --ignore-case -E'
-alias -g G='| rg --smart-case'
-alias -g GG='| rg -C1 --smart-case'
-alias -g GGG='| rg -C2 --smart-case'
-alias -g GGGG='| rg -C3 --smart-case'
 alias -g H='| head'
 alias -g L='| less'
 alias -g S='| sort'
 alias -g T='| tail -100f'
-alias -g P='| peco'
 alias -g Z='| fzf --tac'
+
+# Alias for rg or rga
+rg='rg --smart-case'
+hash rga &>/dev/null && rg='rga --smart-case'
+alias -g G="| $rg"
+alias -g GG="| $rg -C1"
+alias -g GGG="| $rg -C2"
+alias -g GGGG="| $rg -C3"
+
 # Colorize json
-alias -g J='|jq .'
+alias -g J='| jq .'
 
 # Aliases based on suffix
 alias -s md=mdcat
@@ -59,5 +63,3 @@ done
 for e in ag cp grep ln mv; do
     alias "$e=nocorrect ${aliases[$e]:-$e}"
 done
-
-alias tor="tor -f $HOME/.tor/torrc --Log 'notice stdout'"
