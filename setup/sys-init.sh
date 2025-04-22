@@ -41,5 +41,6 @@ git config --global core.excludesfile $(
 
 ./setup/hook-login-script.sh
 
+./setup/generate-completions.sh
 ./setup/generate-source-cache.sh
 

@@ -1,3 +1,8 @@
+# Remove all .zwc files (compiled zsh files)
+clean-zwc() {
+    fd --no-ignore-vcs --glob "*.zwc" | xargs rm
+}
+
 # from http://chneukirchen.org/blog/archive/2013/03/10-fresh-zsh-tricks-you-may-not-know.html
 imv() {
   local src dst

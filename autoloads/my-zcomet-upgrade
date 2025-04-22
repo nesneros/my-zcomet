@@ -1,23 +1,3 @@
-_gen-comp() {
-    compSubCmd="${3:-completion}"
-    cmd=$2
-    destFile="$1/_$cmd"
-    hash "$cmd" &>/dev/null || return
-    echo "completion ${cmd} -> ${destFile}"
-    $cmd "$compSubCmd" zsh >"$destFile"
-}
-
-_upgrade-completions() {
-    destDir="$MY_ZCOMET/generated/functions"
-    mkdir -p "$destDir"
-    _gen-comp "$destDir" golangci-lint
-    _gen-comp "$destDir" jira
-    _gen-comp "$destDir" kubectl
-    _gen-comp "$destDir" orbctl
-    _gen-comp "$destDir" ov --completion 
-    # _gen-comp "$destDir" usage --completions
-}
-
 {
     # Silence job info
     setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
@@ -62,10 +42,8 @@ _upgrade-completions() {
         (kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') # &
     fi
 
-    # print "\n--- Upgrade completions ---"
-    _upgrade-completions # &
-    # wait
-
+    "$MY_ZCOMET/setup/generate-completions.sh"
+    echo
     "$MY_ZCOMET/setup/generate-source-cache.sh"
 }
 
