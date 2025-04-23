@@ -19,6 +19,8 @@ esac
 alias ll="ls -l"
 alias week="date +%V"
 alias c=cat
+alias+ rg --smart-case
+alias rgl="rg --no-heading"
 
 alias+ pgrep -fli
 alias+ df -h
