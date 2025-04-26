@@ -15,7 +15,8 @@ dotFilesDir=$(pwd)/dotfiles
 linkdot() {
     file=$1
     from=$dotFilesDir/$file
-    to=$HOME/.$file
+    to="$HOME/.config/${file%.*}/$file"
+    mkdir -p "$(dirname $to)"
     echo " - linking $file ($to -> $from)"
     ln -sf "$from" "$to"
 }
@@ -36,8 +37,9 @@ git config --global core.excludesfile $(
     pwd
 )/gitignore_global
 
-# echo "### Installing TPM"
-# git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm ||:
+echo "### Installing TPM"
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm ||:
+linkdot tmux.conf
 
 ./setup/hook-login-script.sh
 
