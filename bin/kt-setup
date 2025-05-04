@@ -1,0 +1,189 @@
+#!/bin/bash
+
+set -e
+
+# Script to create a new Kitty OS window and configure it
+# by reading layout commands from standard input.
+# Automatically detects and uses the user's default shell ($SHELL).
+# Panes are created with a shell; use CMD to run commands within them.
+# Splits can optionally specify size adjustment in cells (e.g., HSPLIT +10).
+
+# --- Configuration ---
+# Ensure kitty remote control is enabled in your kitty.conf:
+# allow_remote_control yes
+# listen_on unix:/tmp/mykitty # Optional: specify a socket if needed
+
+# --- Initial Setup ---
+# Detect user's shell, fallback to /bin/sh if not set
+USER_SHELL="${SHELL:-/bin/sh}"
+WINDOW_TITLE=""  # Title for the new OS window. Set by -w option. If not set, no new OS window is created.
+TAB_TITLE="First tab"  # Title for the current tab in new OS window. The title of the first tab in a new OS window can be set by -t option.
+CURRENT_CWD="current" # Start with kitty's current directory
+DEBUG=0               # Set to 1 for debugging output
+
+# --- Argument Parsing ---
+while getopts "w:t:hv" opt; do
+    case $opt in
+    t) TAB_TITLE="$OPTARG" ;;
+    w) WINDOW_TITLE="$OPTARG" ;;
+    v) DEBUG=1 ;;
+    h)
+        echo "Usage: $0 [-w window-title] [-t first-tab-title] [-v] < layout_commands.txt"
+        echo "Reads layout commands from stdin:"
+        echo "  TAB [title]           Creates a new tab with optional title"
+        echo "  HSPLIT [+/-N]         Creates a horizontal split, resized by N cells"
+        echo "  VSPLIT [+/-N]         Creates a vertical split, resized by N cells"
+        echo "  CWD /path/to/dir      Sets CWD for subsequent new panes"
+        echo "  CMD command...        Runs command in the active pane's shell"
+        echo "All panes start the shell ($USER_SHELL). Use CMD to run commands."
+        exit 0
+        ;;
+    \?)
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+        ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+# --- Helper Function for Debugging ---
+debug_log() {
+    if [ "$DEBUG" -eq 1 ]; then
+        echo "DEBUG: $*" >&2
+    fi
+}
+
+# --- Helper Function to call kitty launch ---
+
+kitty_launch() {
+    type="$1"
+    location="$2"
+    # If WINDOW_ID is already set give a match option for that window
+    if [[ -n "$WINDOW_ID" ]]; then
+        if [[ -n "$location" ]]; then
+            debug_log "Splitting window '$WINDOW_ID' $location"
+            WINDOW_ID=$(kitty @ launch --location="$location" --cwd="$CURRENT_CWD" --match "id:$WINDOW_ID" "$USER_SHELL")
+        else
+            debug_log "Launching new window in '$WINDOW_ID' of type '%$type', cwd '$CURRENT_CWD'"
+            WINDOW_ID=$(kitty @ launch --type="$type" --cwd="$CURRENT_CWD" --match "id:$WINDOW_ID" "$USER_SHELL")
+        fi
+    else
+        debug_log "Launching window of type '%$type', cwd '$CURRENT_CWD'"
+        WINDOW_ID=$(kitty @ launch --type="$type" --cwd="$CURRENT_CWD" "$USER_SHELL")
+    fi
+    # Check if WINDOW_ID was captured
+    if [ -z "$WINDOW_ID" ] || ! [[ "$WINDOW_ID" =~ ^[0-9]+$ ]]; then
+        echo "Error: Failed to create new OS window or capture its ID." >&2
+        echo "Is Kitty running? Is remote control enabled?" >&2
+        echo "Attempted command: kitty @ launch --type=os-window --title=\"$INITIAL_TITLE\" --cwd=\"$CURRENT_CWD\" \"$USER_SHELL\"" >&2
+        echo "Received output: '$WINDOW_ID'" >&2
+        exit 1
+    fi
+    debug_log "Launched new window with ID: $WINDOW_ID, setting window title '$WINDOW_TITLE' and tab title '$TAB_TITLE'"
+    kitty @ set-window-title  --match "id:$WINDOW_ID" "$WINDOW_TITLE"
+    kitty @ set-tab-title  --match "id:$WINDOW_ID" "$TAB_TITLE"
+}
+
+# --- Create the Initial OS Window if -w provided ---
+[[ -n "$WINDOW_TITLE" ]] && kitty_launch os-window
+
+# --- Process Commands from Stdin ---
+while IFS= read -r line || [[ -n "$line" ]]; do
+    # Trim leading/trailing whitespace
+    line=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+    # Skip empty lines and comments
+    if [ -z "$line" ] || [[ "$line" == \#* ]]; then
+        continue
+    fi
+
+    # Parse the command type and the rest of the line
+    read -r cmd_type args <<<"$line"
+    cmd_args=$(echo "$args" | sed 's/^[[:space:]]*//') # Remaining args
+
+    debug_log "Processing line: '$line'"
+    debug_log "Command Type: '$cmd_type', Args: '$cmd_args'"
+
+    needs_resize=0
+    resize_increment=0 # represents cell count
+
+    case "$cmd_type" in
+    TAB)
+        # Format: TAB [title]
+        TAB_TITLE="$cmd_args" # The entire argument is the title
+        if [ -z "$TAB_TITLE" ]; then
+            TAB_TITLE="New Tab" # Default title if none provided
+        fi
+
+        debug_log "Executing TAB: Title='$TAB_TITLE', CWD='$CURRENT_CWD', Shell='$USER_SHELL'"
+        kitty_launch tab
+        ;;
+    HSPLIT | VSPLIT)
+        # Format: HSPLIT | VSPLIT [+/-N]
+        size_arg="$cmd_args" # Argument might be the cell increment
+
+        if [ -n "$size_arg" ]; then
+            # Check if it's a signed integer
+            if [[ "$size_arg" =~ ^[+-]?[0-9]+$ ]]; then
+                needs_resize=1
+                resize_increment="$size_arg" # Use the argument directly
+                debug_log "Split size adjustment requested: $resize_increment cells"
+            else
+                echo "Warning: Invalid argument '$size_arg' for $cmd_type. Expected [+/-]N (e.g., +10, -5) or no argument. Ignoring argument." >&2
+            fi
+        fi
+
+        location="hsplit"
+        if [ "$cmd_type" == "VSPLIT" ]; then
+            location="vsplit"
+        fi
+
+        debug_log "Executing $cmd_type: Location='$location', CWD='$CURRENT_CWD', Shell='$USER_SHELL'"
+        kitty_launch '' "$location"
+
+        # Apply resize if requested (targets the newly created active window)
+        if [ "$needs_resize" -eq 1 ]; then
+            debug_log "Resizing new split: kitty @ resize-window --increment $resize_increment --match \"id:$WINDOW_ID\""
+            kitty @ resize-window --increment $resize_increment --match "id:$WINDOW_ID"
+        fi
+        ;;
+
+    CMD)
+        # Format: CMD [command_to_run...]
+        user_cmd="$cmd_args"
+        if [ -z "$user_cmd" ]; then
+            echo "CMD requires a command to run." >&2
+            continue
+        fi
+        debug_log "Executing CMD: Cmd='$user_cmd'"
+        debug_log "Sending command to active pane: $user_cmd"
+        # Ensure the command ends with a newline
+        # Send text to the active window
+        kitty @ send-text --match "id:$WINDOW_ID" "$user_cmd\n"
+        ;;
+
+    CWD)
+        # Format: CWD /path/to/directory
+        new_cwd="$cmd_args"
+        if [ -z "$new_cwd" ]; then
+            echo "CWD requires a directory path." >&2
+            continue
+        fi
+        eval new_cwd="$new_cwd" # Expand ~ etc.
+        if [ -d "$new_cwd" ]; then
+            CURRENT_CWD="$new_cwd"
+            debug_log "Set CWD for next commands to: $CURRENT_CWD"
+        else
+            debug_log "Invalid directory for CWD: $new_cwd"
+            echo "Warning: Invalid directory specified for CWD: $new_cwd" >&2
+        fi
+        ;;
+
+    *)
+        echo "Unknown command type: '$cmd_type'" >&2
+        exit 1
+        ;;
+    esac
+done
+
+debug_log "Finished processing commands."
