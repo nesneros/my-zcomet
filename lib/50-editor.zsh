@@ -9,3 +9,7 @@ fi
 if (( $+commands[nvim] )) ; then
     export EDITOR=$(which nvim)
 fi
+
+if (( $+commands[ov] )) ; then
+    export PAGER=$(which ov)
+fi
