@@ -33,8 +33,8 @@ cleanup-path() {
   var_value=${(P)var_name}
   
   if [[ -z "$var_value" ]]; then
-    echo "Error: Variable $var_name not found or empty."
-    return 1
+    # echo "Error: Variable $var_name not found or empty."
+    return 0
   fi
   
   # Split the path into an array using colon as separator
