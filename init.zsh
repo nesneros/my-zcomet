@@ -12,7 +12,6 @@ func alias+() {
 
 # Load lib folder
 
-zcomet load agkozak/zsh-z
 for config_file ($MY_ZCOMET/lib/*.zsh); do
     # echo "Loading $config_file..."
     [[ $PROFILING ]] && local start_time=$EPOCHREALTIME
