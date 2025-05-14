@@ -14,8 +14,9 @@ dotFilesDir=$(pwd)/dotfiles
 
 linkdot() {
     file=$1
+    toName="${2-${file}}"
     from=$dotFilesDir/$file
-    to="$HOME/.config/${file%.*}/$file"
+    to="$HOME/.config/${file%.*}/$toName"
     mkdir -p "$(dirname $to)"
     echo " - linking $file ($to -> $from)"
     ln -sf "$from" "$to"
@@ -27,8 +28,7 @@ if [[ ! -f ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh ]]; then
 fi
 
 echo "### Setup Mise"
-mkdir -p "$HOME/.config/mise"
-ln -sf "$dotFilesDir/mise-global.toml" "$HOME/.config/mise/config.toml"
+linkdot mise.toml config.toml
 mise install
 
 echo "### Define global gitignore"
@@ -38,8 +38,10 @@ git config --global core.excludesfile $(
 )/gitignore_global
 
 echo "### Installing TPM"
-git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm ||:
+git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm || git -C ~/.config/tmux/plugins/tpm pull
 linkdot tmux.conf
+
+linkdot ov.yaml config.yaml
 
 ./setup/hook-login-script.sh
 
