@@ -6,10 +6,10 @@ mkdir -p "$CLIP_DIR"
 
 usage() {
   echo "Usage:"
-  echo "  clipstore --list           List all saved snippets"
-  echo "  clipstore --delete <name>  Delete a named snippet"
-  echo "  clipstore -h or --help     Show this usage message"
-  echo "  clipstore <name>           Intelligently save or paste the named snippet"
+  echo "  clipstore -l, --list            List all saved snippets"
+  echo "  clipstore -d, --delete <name>   Delete a named snippet"
+  echo "  clipstore -h, --help            Show this usage message"
+  echo "  clipstore <name>                Intelligently save or paste the named snippet"
 }
 
 noargs() {
@@ -25,15 +25,12 @@ case "$1" in
 -h | --help)
   usage
   ;;
---list)
+-l | --list)
   ls -1 "$CLIP_DIR"
   ;;
---delete)
+-d | --delete)
   [[ -z "$2" ]] && usage && exit 1
   rm -f "$CLIP_DIR/$2" && echo "Deleted '$2'"
-  ;;
---delete-all)
-  rm -f "$CLIP_DIR/*" && echo "Deleted all snippets"
   ;;
 -*)
   usage && exit 1
