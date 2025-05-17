@@ -42,6 +42,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm || git 
 linkdot tmux.conf
 
 linkdot ov.yaml config.yaml
+linkdot lazygit.yml config.yml
 
 ./setup/hook-login-script.sh
 
