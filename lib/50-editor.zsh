@@ -1,14 +1,6 @@
-if (( $+commands[codium] )) ; then
-    export VEDITOR=$(which codium)
-    export EDITOR="$VEDITOR -w"
-elif (( $+commands[code] )) ; then
-    export VEDITOR=$(which code)
-    export EDITOR="$VEDITOR -w"
-fi
-
-if (( $+commands[nvim] )) ; then
-    export EDITOR=$(which nvim)
-fi
+export VEDITOR=$(which e)
+export EDITOR="$VEDITOR -w"
+export GIT_EDITOR="$EDITOR"
 
 if (( $+commands[ov] )) ; then
     export PAGER=$(which ov)
