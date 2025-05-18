@@ -15,3 +15,7 @@ run = "./setup/generate-source-cache.sh"
 
 [tasks.post-merge]
 run = "mise run generate"
+
+[tasks.sys-init]
+description = "Initialize system - this is idem potent"
+run = "cd $MISE_PROJECT_ROOT && ./setup/sys-init.sh"
