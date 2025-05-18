@@ -11,15 +11,13 @@ cd "${QRYPT_DIR}"
 query="$1"
 if [ "$query" = '-1' ]; then
     query="$2"
-    file=$(eval ls -1 -r "*$query*.pdf.{asc,gpg}(N)" | head -n 1)
+    file=$(eval ls -1 -r "*$query*.{pdf,txt}.{asc,gpg}(N)"  | head -n 1)
 else
-    file=$(eval ls -1 -r "*$query*.pdf.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1)
+    file=$(eval ls -1 -r "*$query*.{pdf,txt}.{asc,gpg}(N)" | fzf -1 -d'[^.]+' --with-nth=1..-2)
 fi
 
-tmpFile="$(mktemp)"
+tmpFile="$(mktemp).${file:r}"
 gpg --batch --quiet --output - <"$file" >"$tmpFile"
-mv "$tmpFile" "${tmpFile}.pdf"
-tmpFile="${tmpFile}.pdf"
 (
     sleep 1
     rm "$tmpFile"
