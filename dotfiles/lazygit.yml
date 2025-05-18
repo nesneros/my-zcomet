@@ -1,3 +1,8 @@
 keybinding:
   universal:
     optionMenu-alt1: '<f1>'
+customCommands:
+  - key: 'e'
+    context: 'files'
+    command: "e {{.SelectedPath | quote}}"
+    description: 'Open project and select file'
