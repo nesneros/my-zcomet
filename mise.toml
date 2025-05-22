@@ -10,6 +10,7 @@ patterns = ["dotfiles/oh-my-posh.jsonnet"]
 run = "jsonnet $MY_ZCOMET/dotfiles/oh-my-posh.jsonnet > $MY_ZCOMET/generated/oh-my-posh.json"
 
 [tasks.generate]
+alias = "githook-post-merge"
 description = "Generate completoins and init scripts"
 run = "./setup/generate-source-cache.sh"
 
