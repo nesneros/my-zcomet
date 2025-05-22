@@ -19,8 +19,6 @@ esac
 alias ll="ls -l"
 alias week="date +%V"
 alias c=cat
-alias+ rg --smart-case
-alias rgl="rg --no-heading"
 
 alias+ pgrep -fli
 alias+ df -h
@@ -36,8 +34,10 @@ alias -g T='| tail -100f'
 alias -g Z='| fzf --height=100% --no-sort'
 
 # Alias for rg or rga
-rg='rg --smart-case'
-hash rga &>/dev/null && rg='rga --smart-case'
+local rg_opts='--smart-case --no-heading --line-number --with-filename'
+local rg="rg $rg_opts"
+hash rga &>/dev/null && rg="rga $rg_opts"
+alias rg="$rg"
 alias -g G="| $rg"
 alias -g GG="| $rg -C1"
 alias -g GGG="| $rg -C2"
