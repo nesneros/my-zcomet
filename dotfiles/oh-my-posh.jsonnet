@@ -97,12 +97,6 @@ local plain(x) = { style: 'plain'} + x;
             style: 'austin',
           },
         }),
-        chip({
-          type: 'aws',
-          foreground: '#ffffff',
-          background: '#FFA400',
-          template: '  {{.Profile}}{{if .Region}}@{{.Region}}{{end}}',
-        }),
       ],
     },
     {
