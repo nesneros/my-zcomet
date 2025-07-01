@@ -64,7 +64,13 @@ else
     debug_log "not a git project. arg: $arg"
 fi
 
-cmd="code $WAIT $new_window_arg $goto_param '$arg'"
+# If cursor is installed use it, otherwise use code
+CODE=code
+if [[ -x "$(command -v cursor)" ]]; then
+    CODE=cursor
+fi
+
+cmd="$CODE $WAIT $new_window_arg $goto_param '$arg'"
 debug_log "cmd: $cmd"
 exec eval "$cmd"
 # code "$WAIT" "$new_window_arg" "$goto_param" "$arg" # >/tmp/editor-log 2>&1
