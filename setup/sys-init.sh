@@ -32,10 +32,10 @@ linkdot mise.toml config.toml
 mise install
 
 echo "### Define global gitignore"
-git config --global core.excludesfile $(
+git config --global core.excludesfile "$(
     cd "$(dirname "$0")"
     pwd
-)/gitignore_global
+)/gitignore_global"
 
 echo "### Installing TPM"
 git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm || git -C ~/.config/tmux/plugins/tpm pull

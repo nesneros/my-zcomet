@@ -5,11 +5,8 @@
 go-jsonnet = "latest"
 # usage = "latest"
 
-[[watch_files]]
-patterns = ["dotfiles/oh-my-posh.jsonnet"]
-run = "jsonnet $MY_ZCOMET/dotfiles/oh-my-posh.jsonnet > $MY_ZCOMET/generated/oh-my-posh.json"
-
 [tasks.generate]
+alias = "githook-post-merge"
 description = "Generate completoins and init scripts"
 run = "./setup/generate-source-cache.sh"
 
@@ -17,5 +14,5 @@ run = "./setup/generate-source-cache.sh"
 run = "mise run generate"
 
 [tasks.sys-init]
-description = "Initialize system. This is idem potent"
+description = "Initialize system. This is idempotent"
 run = "cd $MISE_PROJECT_ROOT && ./setup/sys-init.sh"
