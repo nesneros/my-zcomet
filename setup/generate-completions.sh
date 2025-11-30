@@ -7,7 +7,6 @@ _gen-comp() {
     cmd=$2
     destFile="$1/_$cmd"
     hash "$cmd" &>/dev/null || return 0
-    echo "completion ${cmd} -> ${destFile}"
     $cmd "$compSubCmd" zsh >"$destFile"
 }
 
@@ -18,4 +17,5 @@ _gen-comp "$destDir" jira
 _gen-comp "$destDir" kubectl
 _gen-comp "$destDir" orbctl
 _gen-comp "$destDir" ov --completion
+hash ykman &>/dev/null && _YKMAN_COMPLETE=bash_source ykman completion zsh > "$destDir/_ykman"
 # _gen-comp "$destDir" usage --completions
