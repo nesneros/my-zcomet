@@ -2,7 +2,7 @@
 export ZCOMET_SOURCE=$ZCOMET[SCRIPT]
 export MY_ZCOMET
 export XDG_CONFIG_HOME="$HOME/.config"
-export PATH=$MY_ZCOMET/bin:$HOME/share/bin:$HOME/bin:$PATH
+export PATH=$MY_ZCOMET/bin:$HOME/share/bin:$HOME/bin:$HOME/.local/bin:$PATH
 export FPATH=$MY_ZCOMET/generated/functions:$FPATH
 
 autoload -Uz $MY_ZCOMET/autoloads/*
