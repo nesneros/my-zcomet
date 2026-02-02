@@ -35,6 +35,6 @@ printf "# Generated at %s\n\n" "$(date)" >>"$source_cache"
 [[ -x "$brewBin" ]] && _add_source_cache "$brewBin" shellenv
 _add_source_cache batpipe
 _add_source_cache thefuck --alias
-_add_source_cache mise activate zsh
+# _add_source_cache mise activate zsh # Seems like mise messes with path when it is here
 _add_source_cache zoxide init zsh
 _add_source_cache oh-my-posh init zsh --config "$MY_ZCOMET/generated/oh-my-posh.json"
