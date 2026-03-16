@@ -3,3 +3,4 @@ lib/*.local.*
 *.zwc
 generated/
 
+.vscode/
