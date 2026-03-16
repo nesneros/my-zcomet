@@ -2,4 +2,5 @@ setup/Brewfile.lock.json
 lib/*.local.*
 *.zwc
 generated/
+.vscode/
 
