@@ -73,6 +73,12 @@ local plain(x) = { style: 'plain'} + x;
           style: 'diamond',
         },
         chip({
+          type: 'docker',
+          foreground: '#000000',
+          background: '#0B59E7',
+          template: '  {{ .Context }} ',
+        }),
+        chip({
           template: ' {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} ',
           foreground: '#ffffff',
           background: '#7FD5EA',
