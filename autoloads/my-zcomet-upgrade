@@ -21,10 +21,7 @@
 
     if hash brew &>/dev/null; then
         print "\n--- Upgrading brews ---"
-        # brew upgrade --cask --greedy
-        brew upgrade --cask
-        brew upgrade
-        brew cleanup
+        brew upgrade -y
         print -- "--- Done upgrading brews ---\n"
     fi
 
