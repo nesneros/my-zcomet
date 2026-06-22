@@ -1,6 +1,6 @@
-local powerline(x) = { style: 'powerline', powerline_symbol: "\ue0b0"} + x;
-local chip(x) = { style: 'diamond', leading_diamond: "\ue0b6", trailing_diamond: "\ue0b4"} + x;
-local plain(x) = { style: 'plain'} + x;
+local powerline(x) = { style: 'powerline', powerline_symbol: '' } + x;
+local chip(x) = { style: 'diamond', leading_diamond: '', trailing_diamond: '' } + x;
+local plain(x) = { style: 'plain' } + x;
 
 {
   '$schema': 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json',
@@ -64,14 +64,26 @@ local plain(x) = { style: 'plain'} + x;
       type: 'prompt',
       alignment: 'right',
       segments: [
-        {
-          leading_diamond: '',
-          template: ' {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} ',
+        chip({
+          type: 'aws',
+          foreground: '#ffffff',
+          background: '#FFA400',
+          template: '  {{.Profile}}{{if .Region}}@{{.Region}}{{end}}',
+        }),
+        chip({
+          type: 'kubectl',
           foreground: '#000000',
-          background: '#D4E157',
-          type: 'python',
-          style: 'diamond',
-        },
+          background: '#ebcc34',
+          template: ' ⎈ {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}} ',
+          options: {
+            context_aliases: {
+              'arn:aws:eks:eu-west-1:1234567890:cluster/posh': 'posh',
+            },
+            cluster_aliases: {
+              'arn:aws:eks:eu-west-1:1234567890:cluster/posh': 'posh-cluster',
+            },
+          },
+        }),
         chip({
           type: 'docker',
           foreground: '#000000',
@@ -133,18 +145,4 @@ local plain(x) = { style: 'plain'} + x;
       newline: true,
     },
   ],
-  tooltips: [
-    chip({
-      type: 'kubectl',
-      tips: [
-        'kubectl',
-        'kc',
-        'k',
-      ],
-      foreground: '#000000',
-      background: '#ebcc34',
-      template: ' ﴱ {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}} ',
-    }),
-  ],
-  version: 3,
 }
