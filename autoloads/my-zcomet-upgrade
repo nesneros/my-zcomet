@@ -1,48 +1,46 @@
-{
-    # Silence job info
-    setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
+# Silence job info
+setopt LOCAL_OPTIONS NO_NOTIFY NO_MONITOR
 
-    if [[ -n "$ZCOMET_SOURCE" ]]; then
-        # shellcheck disable=SC1090
-        source "$ZCOMET_SOURCE"
-        # print "\n--- Upgrade zcomet ---"
-        ({
-            zcomet self-update
-            zcomet update
-        } 2>&1 |
-            sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' |
-            grep --line-buffered -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" | sed -u "s/^/zcomet: /") # &
-    fi
+if [[ -n "$ZCOMET_SOURCE" ]]; then
+	# shellcheck disable=SC1090
+	source "$ZCOMET_SOURCE"
+	# print "\n--- Upgrade zcomet ---"
+	({
+		zcomet self-update
+		zcomet update
+	} 2>&1 |
+		sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' |
+		grep --line-buffered -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" | sed -u "s/^/zcomet: /") # &
+fi
 
-    if hash apt-get &>/dev/null; then
-        print "\n--- Upgrading APT packages ---"
-        sudo apt-get update && sudo apt-get upgrade
-    fi
+if hash apt-get &>/dev/null; then
+	print "\n--- Upgrading APT packages ---"
+	sudo apt-get update && sudo apt-get upgrade
+fi
 
-    if hash brew &>/dev/null; then
-        print "\n--- Upgrading brews ---"
-        brew upgrade -y
-        print -- "--- Done upgrading brews ---\n"
-    fi
+if hash brew &>/dev/null; then
+	print "\n--- Upgrading brews ---"
+	brew upgrade -y
+	print -- "--- Done upgrading brews ---\n"
+fi
 
-    if hash mise &>/dev/null; then
-        print "\n--- Upgrading mise ---"
-        mise upgrade 2>&1
-        if ! mise dr >/dev/null 2>&1; then
-            mise dr || :
-        fi
-        print -- "--- Done upgrading mise ---\n"
-    fi
+if hash mise &>/dev/null; then
+	print "\n--- Upgrading mise ---"
+	mise upgrade 2>&1
+	if ! mise dr >/dev/null 2>&1; then
+		mise dr || :
+	fi
+	print -- "--- Done upgrading mise ---\n"
+fi
 
-    if hash kubectl-krew &>/dev/null;  then
-        #print "\n--- Upgrading kubectl krew ---"
-        (kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') # &
-    fi
+if hash kubectl-krew &>/dev/null; then
+	#print "\n--- Upgrading kubectl krew ---"
+	(kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /') # &
+fi
 
-    "$MY_ZCOMET/setup/generate-completions.sh"
-    echo
-    "$MY_ZCOMET/setup/generate-source-cache.sh"
-}
+"$MY_ZCOMET/setup/generate-completions.sh"
+echo
+"$MY_ZCOMET/setup/generate-source-cache.sh"
 
 setopt NOTIFY MONITOR
 exec zsh
