@@ -44,4 +44,5 @@
     "$MY_ZCOMET/setup/generate-source-cache.sh"
 }
 
+setopt NOTIFY MONITOR
 exec zsh
