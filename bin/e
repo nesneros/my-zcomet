@@ -1,18 +1,26 @@
-#!/bin/zsh -e
+#!/usr/bin/env zsh
+set -euo pipefail
 
 usage() {
     echo "Usage: $0 [-l line] [-v] [-w] [file-or-directory]"
-    if [[ -n "$1" ]]; then
+    if [[ -n "${1:-}" ]]; then
         echo "$1"
         exit 1
     fi
 }
 
 debug_log() {
-    if [[ -n "$DEBUG" ]]; then
+    if [[ -n "${DEBUG:-}" ]]; then
         echo "$@"
     fi
 }
+
+# Initialize optional variables
+line=""
+WAIT=""
+DEBUG=""
+new_window_arg=""
+goto_param=""
 
 while getopts "vwl:" opt; do
     case $opt in
@@ -35,7 +43,7 @@ while [[ ! -d "$dir" ]]; do
     # Stop if we reach the root directory
     if [ "$dir" = "/" ]; then
         echo "No existing directory found in path hierarchy"
-        return 1
+        exit 1
     fi
 done
 
@@ -64,9 +72,11 @@ else
     debug_log "not a git project. arg: $arg"
 fi
 
-# If cursor is installed use it, otherwise use code
+# If agy-ide or cursor is installed use it, otherwise use code
 CODE=code
-if [[ -x "$(command -v cursor)" ]]; then
+if [[ -x "$(command -v agy-ide)" ]]; then
+    CODE="agy-ide"
+elif [[ -x "$(command -v cursor)" ]]; then
     CODE=cursor
 fi
 
