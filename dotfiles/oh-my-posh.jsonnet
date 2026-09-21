@@ -64,26 +64,26 @@ local plain(x) = { style: 'plain' } + x;
       type: 'prompt',
       alignment: 'right',
       segments: [
-        chip({
-          type: 'aws',
-          foreground: '#ffffff',
-          background: '#FFA400',
-          template: '  {{.Profile}}{{if .Region}}@{{.Region}}{{end}}',
-        }),
-        chip({
-          type: 'kubectl',
-          foreground: '#000000',
-          background: '#ebcc34',
-          template: ' ⎈ {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}} ',
-          options: {
-            context_aliases: {
-              'arn:aws:eks:eu-west-1:1234567890:cluster/posh': 'posh',
-            },
-            cluster_aliases: {
-              'arn:aws:eks:eu-west-1:1234567890:cluster/posh': 'posh-cluster',
-            },
-          },
-        }),
+        // chip({
+        //   type: 'aws',
+        //   foreground: '#ffffff',
+        //   background: '#FFA400',
+        //   template: '  {{.Profile}}{{if .Region}}@{{.Region}}{{end}}',
+        // }),
+        // chip({
+        //   type: 'kubectl',
+        //   foreground: '#000000',
+        //   background: '#ebcc34',
+        //   template: ' ⎈ {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}} ',
+        //   options: {
+        //     context_aliases: {
+        //       'arn:aws:eks:eu-west-1:1234567890:cluster/posh': 'posh',
+        //     },
+        //     cluster_aliases: {
+        //       'arn:aws:eks:eu-west-1:1234567890:cluster/posh': 'posh-cluster',
+        //     },
+        //   },
+        // }),
         chip({
           type: 'docker',
           foreground: '#000000',
