@@ -1,0 +1,3 @@
+hash kubectl-krew &>/dev/null || return 0
+
+(kubectl krew upgrade 2>&1 | grep --line-buffered -v "it is already on the newest version$" | sed -u 's/^/kubectl krew: /')

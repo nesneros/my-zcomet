@@ -1,0 +1,12 @@
+if [[ -z "$ZCOMET_SOURCE" ]]; then
+	return 0
+fi
+
+# shellcheck disable=SC1090
+source "$ZCOMET_SOURCE"
+({
+	zcomet self-update
+	zcomet update
+} 2>&1 |
+	sed -u 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g' |
+	grep --line-buffered -v "^\(Already up to date\.\|You may now run .exec zsh' to refresh the system\.\|zcomet: Self-update finished\.\|$\)$" | sed -u "s/^/zcomet: /")

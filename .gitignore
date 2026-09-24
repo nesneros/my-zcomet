@@ -1,5 +1,6 @@
 setup/Brewfile.lock.json
 lib/*.local.*
+dotfiles/cron.local
 *.zwc
 generated/
 .vscode/

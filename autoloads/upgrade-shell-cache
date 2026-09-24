@@ -1,0 +1,3 @@
+"$MY_ZCOMET/setup/generate-completions.sh"
+echo
+"$MY_ZCOMET/setup/generate-source-cache.sh"

@@ -1,0 +1,12 @@
+# Poor man's cron jobs
+# Format: cronjob <interval> <command> [condition]
+# Intervals: 12h, 7d  (h=hours, d=days)
+# Condition is eval'd when registering; job is skipped if it fails.
+# Private jobs: dotfiles/cron.local (gitignored)
+
+cronjob 7d upgrade-zcomet '[[ -n $ZCOMET_SOURCE ]]'
+cronjob 11d upgrade-apt 'hash apt-get'
+cronjob 10d upgrade-brew 'hash brew'
+cronjob 1d upgrade-mise 'hash mise'
+cronjob 21d upgrade-krew 'hash kubectl-krew'
+cronjob 17d upgrade-shell-cache

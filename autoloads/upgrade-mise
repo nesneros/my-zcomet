@@ -1,0 +1,11 @@
+hash mise &>/dev/null || return 0
+
+# Attempt self-update; packagers (brew, etc.) can disable this command,
+# in which case mise exits non-zero – just print a short notice and move on
+if ! mise self-update --yes 2>/tmp/mise-self-update-err; then
+	print "mise self-update skipped: $(</tmp/mise-self-update-err)"
+fi
+mise upgrade 2>&1
+if ! mise dr >/dev/null 2>&1; then
+	mise dr || :
+fi

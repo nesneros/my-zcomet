@@ -1,0 +1,160 @@
+#!/usr/bin/env zsh
+# cron-check — check if any poor-man's-cron jobs are due and prompt to run them.
+#
+# Usage: cron-check [-f|--force] [file ...]
+#   Each file is sourced and may register jobs with:
+#     cronjob <interval> <command> [condition]
+#   Intervals: 12h, 7d  (h=hours, d=days)
+#   Condition is eval'd at registration; job is skipped if it fails.
+#   If no files are given, uses dotfiles/cron and dotfiles/cron.local (if present).
+#   -f, --force  Offer all jobs, ignoring the schedule.
+#
+# Exit codes: 0 = ran jobs or nothing due, 1 = user declined, 2 = bad usage
+
+zmodload zsh/datetime  # provides EPOCHSECONDS
+
+# Load autoloaded functions (e.g. my-zcomet-upgrade) from the parent shell's environment
+[[ -n $MY_ZCOMET ]] && autoload -Uz $MY_ZCOMET/autoloads/*
+
+_cron-parse-interval() {
+    local spec=$1
+    local num=${spec%[hd]}
+    local unit=${spec##*[0-9]}
+    case $unit in
+        h) echo $(( num * 3600 )) ;;
+        d) echo $(( num * 86400 )) ;;
+        *) echo 0 ;;
+    esac
+}
+
+_cron-state-file() {
+    echo "${XDG_DATA_HOME:-$HOME/.local/share}/my-zcomet/cron-state"
+}
+
+_cron-get-last-run() {
+    local key=$1
+    local state_file=$(_cron-state-file)
+    [[ -f $state_file ]] || { echo 0; return }
+    local line
+    line=$(grep "^${key}=" "$state_file" 2>/dev/null)
+    [[ -n $line ]] && echo "${line#*=}" || echo 0
+}
+
+_cron-set-last-run() {
+    local key=$1 ts=$2
+    local state_file=$(_cron-state-file)
+    mkdir -p "${state_file:h}"
+    local tmp="${state_file}.tmp"
+    if [[ -f $state_file ]]; then
+        grep -v "^${key}=" "$state_file" > "$tmp" 2>/dev/null || true
+    fi
+    echo "${key}=${ts}" >> "$tmp"
+    mv "$tmp" "$state_file"
+}
+
+_cron-key() {
+    echo "${1}" | tr ' /' '__' | tr -cd '[:alnum:]_-'
+}
+
+_cron-human-ago() {
+    local seconds=$(( EPOCHSECONDS - $1 ))
+    if   (( seconds < 3600  )); then echo "$(( seconds / 60 ))m ago"
+    elif (( seconds < 86400 )); then echo "$(( seconds / 3600 ))h ago"
+    else                             echo "$(( seconds / 86400 )) days ago"
+    fi
+}
+
+typeset -ga _CRON_JOBS
+cronjob() {
+    local interval=$1 cmd=$2 condition=${3:-}
+    if [[ -n $condition ]] && ! eval "$condition" &>/dev/null; then
+        return 0
+    fi
+    _CRON_JOBS+=("${interval}|${cmd}")
+}
+
+# --- Main ---
+
+local force=0
+local -a source_files
+while (( $# )); do
+    case $1 in
+        -f|--force) force=1; shift ;;
+        -h|--help)
+            print -r -- "Usage: cron-check [-f|--force] [file ...]"
+            print -r -- "  Source each file (cronjob <interval> <command> [condition])."
+            print -r -- "  With no files, uses \$MY_ZCOMET/dotfiles/cron{,.local}."
+            print -r -- "  -f, --force  Offer all jobs, ignoring the schedule."
+            exit 0
+            ;;
+        --) shift; source_files+=("$@"); break ;;
+        -*) print -ru2 -- "Unknown option: $1"; exit 2 ;;
+        *) source_files+=("$1"); shift ;;
+    esac
+done
+
+if (( ${#source_files} == 0 )); then
+    [[ -n $MY_ZCOMET ]] || { print -ru2 -- "MY_ZCOMET is not set"; exit 2 }
+    source_files=("$MY_ZCOMET/dotfiles/cron")
+    [[ -f "$MY_ZCOMET/dotfiles/cron.local" ]] && source_files+=("$MY_ZCOMET/dotfiles/cron.local")
+fi
+
+local file
+for file in "$source_files[@]"; do
+    if [[ ! -r $file ]]; then
+        print -ru2 -- "Cannot read cron file: $file"
+        exit 2
+    fi
+    source "$file"
+done
+
+local -a due_cmds due_keys due_ago
+local job interval_spec cmd key interval_secs last_run
+
+for job in "$_CRON_JOBS[@]"; do
+    interval_spec="${job%%|*}"
+    cmd="${job#*|}"
+    key=$(_cron-key "$cmd")
+    interval_secs=$(_cron-parse-interval "$interval_spec")
+    if (( interval_secs == 0 )); then
+        print -ru2 -- "Invalid interval '$interval_spec' for $cmd (use e.g. 12h or 7d)"
+        continue
+    fi
+    last_run=$(_cron-get-last-run "$key")
+
+    if (( force )) || [[ $last_run -eq 0 ]] || (( EPOCHSECONDS - last_run >= interval_secs )); then
+        due_cmds+=("$cmd")
+        due_keys+=("$key")
+        due_ago+=("$( [[ $last_run -eq 0 ]] && echo never || _cron-human-ago $last_run )")
+    fi
+done
+
+[[ ${#due_cmds} -eq 0 ]] && exit 0
+
+echo
+if (( force )); then
+    print -P "%F{yellow}[cron]%f ${#due_cmds} job(s) (--force):"
+else
+    print -P "%F{yellow}[cron]%f ${#due_cmds} job(s) due:"
+fi
+local i
+for (( i = 1; i <= ${#due_cmds}; i++ )); do
+    print -P "  %F{cyan}•%f ${due_cmds[$i]}  %F{240}(last ran: ${due_ago[$i]})%f"
+done
+echo
+
+local answer
+read -r "answer?Run all now? [Y/n] "
+[[ $answer == [nN]* ]] && exit 1
+
+echo
+for (( i = 1; i <= ${#due_cmds}; i++ )); do
+    print -P "%F{yellow}[cron]%f Running: ${due_cmds[$i]}"
+    if eval "${due_cmds[$i]}"; then
+        _cron-set-last-run "${due_keys[$i]}" $EPOCHSECONDS
+        print -P "%F{yellow}[cron]%f Done: ${due_cmds[$i]}"
+    else
+        print -P "%F{red}[cron]%f Failed: ${due_cmds[$i]}"
+    fi
+    echo
+done

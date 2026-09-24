@@ -1,0 +1,3 @@
+hash brew &>/dev/null || return 0
+
+brew upgrade -y
