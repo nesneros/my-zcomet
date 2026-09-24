@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 _gen-comp() {
     compSubCmd="${3:-completion}"
@@ -12,7 +12,7 @@ _gen-comp() {
 
 destDir="$MY_ZCOMET/generated/functions"
 mkdir -p "$destDir"
-_gen-comp "$destDir" golangci-lint
+# _gen-comp "$destDir" golangci-lint
 _gen-comp "$destDir" jira
 _gen-comp "$destDir" k3d
 _gen-comp "$destDir" kubectl
