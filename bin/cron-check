@@ -1,13 +1,14 @@
 #!/usr/bin/env zsh
 # cron-check — check if any poor-man's-cron jobs are due and prompt to run them.
 #
-# Usage: cron-check [-f|--force] [file ...]
+# Usage: cron-check [-f|--force] [-l|--list] [file ...]
 #   Each file is sourced and may register jobs with:
 #     cronjob <interval> <command> [condition]
 #   Intervals: 12h, 7d  (h=hours, d=days)
 #   Condition is eval'd at registration; job is skipped if it fails.
 #   If no files are given, uses dotfiles/cron and dotfiles/cron.local (if present).
 #   -f, --force  Offer all jobs, ignoring the schedule.
+#   -l, --list   List jobs with last and next run times, then exit.
 #
 # Exit codes: 0 = ran jobs or nothing due, 1 = user declined, 2 = bad usage
 
@@ -64,6 +65,15 @@ _cron-human-ago() {
     fi
 }
 
+_cron-fmt-time() {
+    local ts=$1
+    if [[ $ts -eq 0 ]]; then
+        echo "never"
+    else
+        strftime "%Y-%m-%d %H:%M" $ts
+    fi
+}
+
 typeset -ga _CRON_JOBS
 cronjob() {
     local interval=$1 cmd=$2 condition=${3:-}
@@ -75,16 +85,18 @@ cronjob() {
 
 # --- Main ---
 
-local force=0
+local force=0 list=0
 local -a source_files
 while (( $# )); do
     case $1 in
         -f|--force) force=1; shift ;;
+        -l|--list) list=1; shift ;;
         -h|--help)
-            print -r -- "Usage: cron-check [-f|--force] [file ...]"
+            print -r -- "Usage: cron-check [-f|--force] [-l|--list] [file ...]"
             print -r -- "  Source each file (cronjob <interval> <command> [condition])."
             print -r -- "  With no files, uses \$MY_ZCOMET/dotfiles/cron{,.local}."
             print -r -- "  -f, --force  Offer all jobs, ignoring the schedule."
+            print -r -- "  -l, --list   List jobs with last and next run times."
             exit 0
             ;;
         --) shift; source_files+=("$@"); break ;;
@@ -107,6 +119,38 @@ for file in "$source_files[@]"; do
     fi
     source "$file"
 done
+
+if (( list )); then
+    local job interval_spec cmd key interval_secs last_run next_run last_fmt next_fmt due_mark
+    print -P "%F{yellow}[cron]%f ${#_CRON_JOBS} job(s):"
+    for job in "$_CRON_JOBS[@]"; do
+        interval_spec="${job%%|*}"
+        cmd="${job#*|}"
+        key=$(_cron-key "$cmd")
+        interval_secs=$(_cron-parse-interval "$interval_spec")
+        if (( interval_secs == 0 )); then
+            print -ru2 -- "Invalid interval '$interval_spec' for $cmd (use e.g. 12h or 7d)"
+            continue
+        fi
+        last_run=$(_cron-get-last-run "$key")
+        if [[ $last_run -eq 0 ]]; then
+            next_run=$EPOCHSECONDS
+            due_mark=" %F{green}(due)%f"
+        else
+            next_run=$(( last_run + interval_secs ))
+            if (( next_run <= EPOCHSECONDS )); then
+                due_mark=" %F{green}(due)%f"
+            else
+                due_mark=""
+            fi
+        fi
+        last_fmt=$(_cron-fmt-time $last_run)
+        next_fmt=$(_cron-fmt-time $next_run)
+        print -P "  %F{cyan}•%f ${cmd}  %F{240}every ${interval_spec}%f"
+        print -P "      last: ${last_fmt}   next: ${next_fmt}${due_mark}"
+    done
+    exit 0
+fi
 
 local -a due_cmds due_keys due_ago
 local job interval_spec cmd key interval_secs last_run
