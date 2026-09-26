@@ -1,6 +1,6 @@
 # Poor man's cron jobs
 # Format: cronjob <interval> <command> [condition]
-# Intervals: 12h, 7d  (h=hours, d=days)
+# Intervals: 12h, 7d  (h=hours, d=days). Trailing ! (4h!) runs with no prompt.
 # Condition is eval'd when registering; job is skipped if it fails.
 # Private jobs: dotfiles/cron.local (gitignored)
 
