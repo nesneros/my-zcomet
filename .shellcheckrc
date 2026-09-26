@@ -1,0 +1,3 @@
+# zsh shebangs are outside ShellCheck's dialects. Silence that error
+# for the whole repo instead of repeating it in each script.
+disable=SC1071

@@ -1,6 +1,4 @@
 #!/usr/bin/env zsh
-# shellcheck disable=SC1071  # zsh; ShellCheck only parses sh/bash/dash/ksh
-# cron-check — check if any poor-man's-cron jobs are due and prompt to run them.
 #
 # Usage: cron-check [-f|--force] [-l|--list] [file ...]
 #   Each file is sourced and may register jobs with:
