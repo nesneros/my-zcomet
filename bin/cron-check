@@ -1,16 +1,16 @@
 #!/usr/bin/env zsh
-#
-# Usage: cron-check [-f|--force] [-l|--list] [file ...]
-#   Each file is sourced and may register jobs with:
-#     cronjob <interval> <command> [condition]
-#   Intervals: 12h, 7d  (h=hours, d=days). A trailing ! (e.g. 4h!) runs that job
-#   with no prompt when it is due.
-#   Condition is eval'd at registration; job is skipped if it fails.
-#   If no files are given, uses dotfiles/cron and dotfiles/cron.local (if present).
-#   -f, --force  Offer all jobs, ignoring the schedule.
-#   -l, --list   List jobs with last and next run times, then exit.
-#
-# Exit codes: 0 = ran jobs or nothing due, 1 = user declined, 2 = bad usage
+
+usage="Usage: cron-check [-f|--force] [-l|--list] [file ...]
+  Each file is sourced and may register jobs with:
+    cronjob <interval> <command> [condition]
+  Intervals: 12h, 7d  (h=hours, d=days). A trailing ! (e.g. 4h!) runs that job
+  with no prompt when it is due.
+  Condition is eval'd at registration; job is skipped if it fails.
+  If no files are given, uses dotfiles/cron and dotfiles/cron.local (if present).
+  -f, --force  Offer all jobs, ignoring the schedule.
+  -l, --list   List jobs with last and next run times, then exit.
+
+Exit codes: 0 = ran jobs or nothing due, 1 = user declined, 2 = bad usage"
 
 zmodload zsh/datetime  # provides EPOCHSECONDS
 
@@ -93,15 +93,7 @@ while (( $# )); do
     case $1 in
         -f|--force) force=1; shift ;;
         -l|--list) list=1; shift ;;
-        -h|--help)
-            print -r -- "Usage: cron-check [-f|--force] [-l|--list] [file ...]"
-            print -r -- "  Source each file (cronjob <interval> <command> [condition])."
-            print -r -- "  Intervals: 12h, 7d. A trailing ! (4h!) runs that job with no prompt."
-            print -r -- "  With no files, uses \$MY_ZCOMET/dotfiles/cron{,.local}."
-            print -r -- "  -f, --force  Offer all jobs, ignoring the schedule."
-            print -r -- "  -l, --list   List jobs with last and next run times."
-            exit 0
-            ;;
+        -h|--help) print -r -- "$usage"; exit 0 ;;
         --) shift; source_files+=("$@"); break ;;
         -*) print -ru2 -- "Unknown option: $1"; exit 2 ;;
         *) source_files+=("$1"); shift ;;
