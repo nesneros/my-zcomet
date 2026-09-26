@@ -1,10 +1,12 @@
 #!/usr/bin/env zsh
+# shellcheck disable=SC1071  # zsh; ShellCheck only parses sh/bash/dash/ksh
 # cron-check — check if any poor-man's-cron jobs are due and prompt to run them.
 #
 # Usage: cron-check [-f|--force] [-l|--list] [file ...]
 #   Each file is sourced and may register jobs with:
 #     cronjob <interval> <command> [condition]
-#   Intervals: 12h, 7d  (h=hours, d=days)
+#   Intervals: 12h, 7d  (h=hours, d=days). A trailing ! (e.g. 4h!) runs that job
+#   with no prompt when it is due.
 #   Condition is eval'd at registration; job is skipped if it fails.
 #   If no files are given, uses dotfiles/cron and dotfiles/cron.local (if present).
 #   -f, --force  Offer all jobs, ignoring the schedule.
@@ -19,8 +21,10 @@ zmodload zsh/datetime  # provides EPOCHSECONDS
 
 _cron-parse-interval() {
     local spec=$1
+    spec=${spec%'!'}  # trailing ! marks "run with no prompt"
     local num=${spec%[hd]}
     local unit=${spec##*[0-9]}
+    [[ $num == <-> ]] || { echo 0; return }
     case $unit in
         h) echo $(( num * 3600 )) ;;
         d) echo $(( num * 86400 )) ;;
@@ -94,6 +98,7 @@ while (( $# )); do
         -h|--help)
             print -r -- "Usage: cron-check [-f|--force] [-l|--list] [file ...]"
             print -r -- "  Source each file (cronjob <interval> <command> [condition])."
+            print -r -- "  Intervals: 12h, 7d. A trailing ! (4h!) runs that job with no prompt."
             print -r -- "  With no files, uses \$MY_ZCOMET/dotfiles/cron{,.local}."
             print -r -- "  -f, --force  Offer all jobs, ignoring the schedule."
             print -r -- "  -l, --list   List jobs with last and next run times."
@@ -121,7 +126,7 @@ for file in "$source_files[@]"; do
 done
 
 if (( list )); then
-    local job interval_spec cmd key interval_secs last_run next_run last_fmt next_fmt due_mark
+    local job interval_spec cmd key interval_secs last_run next_run last_fmt next_fmt due_mark noprompt_note
     print -P "%F{yellow}[cron]%f ${#_CRON_JOBS} job(s):"
     for job in "$_CRON_JOBS[@]"; do
         interval_spec="${job%%|*}"
@@ -129,7 +134,7 @@ if (( list )); then
         key=$(_cron-key "$cmd")
         interval_secs=$(_cron-parse-interval "$interval_spec")
         if (( interval_secs == 0 )); then
-            print -ru2 -- "Invalid interval '$interval_spec' for $cmd (use e.g. 12h or 7d)"
+            print -ru2 -- "Invalid interval '$interval_spec' for $cmd (use e.g. 12h, 7d, or 4h!)"
             continue
         fi
         last_run=$(_cron-get-last-run "$key")
@@ -146,13 +151,15 @@ if (( list )); then
         fi
         last_fmt=$(_cron-fmt-time $last_run)
         next_fmt=$(_cron-fmt-time $next_run)
-        print -P "  %F{cyan}•%f ${cmd}  %F{240}every ${interval_spec}%f"
+        noprompt_note=
+        [[ $interval_spec == *'!' ]] && noprompt_note=" %F{240}(no prompt)%f"
+        print -P "  %F{cyan}•%f ${cmd}  %F{240}every ${interval_spec}%f${noprompt_note}"
         print -P "      last: ${last_fmt}   next: ${next_fmt}${due_mark}"
     done
     exit 0
 fi
 
-local -a due_cmds due_keys due_ago
+local -a due_cmds due_keys due_ago due_noprompt
 local job interval_spec cmd key interval_secs last_run
 
 for job in "$_CRON_JOBS[@]"; do
@@ -161,7 +168,7 @@ for job in "$_CRON_JOBS[@]"; do
     key=$(_cron-key "$cmd")
     interval_secs=$(_cron-parse-interval "$interval_spec")
     if (( interval_secs == 0 )); then
-        print -ru2 -- "Invalid interval '$interval_spec' for $cmd (use e.g. 12h or 7d)"
+        print -ru2 -- "Invalid interval '$interval_spec' for $cmd (use e.g. 12h, 7d, or 4h!)"
         continue
     fi
     last_run=$(_cron-get-last-run "$key")
@@ -170,35 +177,67 @@ for job in "$_CRON_JOBS[@]"; do
         due_cmds+=("$cmd")
         due_keys+=("$key")
         due_ago+=("$( [[ $last_run -eq 0 ]] && echo never || _cron-human-ago $last_run )")
+        if [[ $interval_spec == *'!' ]]; then
+            due_noprompt+=(1)
+        else
+            due_noprompt+=(0)
+        fi
     fi
 done
 
 [[ ${#due_cmds} -eq 0 ]] && exit 0
 
-echo
-if (( force )); then
-    print -P "%F{yellow}[cron]%f ${#due_cmds} job(s) (--force):"
-else
-    print -P "%F{yellow}[cron]%f ${#due_cmds} job(s) due:"
-fi
+local -a prompt_is auto_is
 local i
 for (( i = 1; i <= ${#due_cmds}; i++ )); do
-    print -P "  %F{cyan}•%f ${due_cmds[$i]}  %F{240}(last ran: ${due_ago[$i]})%f"
-done
-echo
-
-local answer
-read -r "answer?Run all now? [Y/n] "
-[[ $answer == [nN]* ]] && exit 1
-
-echo
-for (( i = 1; i <= ${#due_cmds}; i++ )); do
-    print -P "%F{yellow}[cron]%f Running: ${due_cmds[$i]}"
-    if eval "${due_cmds[$i]}"; then
-        _cron-set-last-run "${due_keys[$i]}" $EPOCHSECONDS
-        print -P "%F{yellow}[cron]%f Done: ${due_cmds[$i]}"
+    if (( due_noprompt[i] )); then
+        auto_is+=($i)
     else
-        print -P "%F{red}[cron]%f Failed: ${due_cmds[$i]}"
+        prompt_is+=($i)
+    fi
+done
+
+# Prompt only for jobs without a trailing !. Jobs marked ! always run.
+local run_prompt=0
+if (( ${#prompt_is} )); then
+    echo
+    if (( force )); then
+        print -P "%F{yellow}[cron]%f ${#prompt_is} job(s) (--force):"
+    else
+        print -P "%F{yellow}[cron]%f ${#prompt_is} job(s) due:"
+    fi
+    for i in "${prompt_is[@]}"; do
+        print -P "  %F{cyan}•%f ${due_cmds[$i]}  %F{240}(last ran: ${due_ago[$i]})%f"
+    done
+    if (( ${#auto_is} )); then
+        echo
+        print -P "%F{yellow}[cron]%f Running without prompt:"
+        for i in "${auto_is[@]}"; do
+            print -P "  %F{cyan}•%f ${due_cmds[$i]}  %F{240}(last ran: ${due_ago[$i]})%f"
+        done
     fi
     echo
-done
+
+    local answer
+    read -r "answer?Run all now? [Y/n] "
+    [[ $answer != [nN]* ]] && run_prompt=1
+fi
+
+if (( ${#auto_is} || run_prompt )); then
+    echo
+    for (( i = 1; i <= ${#due_cmds}; i++ )); do
+        (( due_noprompt[i] || run_prompt )) || continue
+        print -P "%F{yellow}[cron]%f Running: ${due_cmds[$i]}"
+        if eval "${due_cmds[$i]}"; then
+            _cron-set-last-run "${due_keys[$i]}" $EPOCHSECONDS
+            print -P "%F{yellow}[cron]%f Done: ${due_cmds[$i]}"
+        else
+            print -P "%F{red}[cron]%f Failed: ${due_cmds[$i]}"
+        fi
+        echo
+    done
+fi
+
+if (( ${#prompt_is} && ! run_prompt )); then
+    exit 1
+fi
