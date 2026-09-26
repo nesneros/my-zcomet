@@ -74,10 +74,10 @@ fi
 
 # If agy-ide or cursor is installed use it, otherwise use code
 CODE=code
-if [[ -x "$(command -v agy-ide)" ]]; then
-    CODE="agy-ide"
-elif [[ -x "$(command -v cursor)" ]]; then
+if [[ -x "$(command -v cursor)" ]]; then
     CODE=cursor
+elif [[ -x "$(command -v agy-ide)" ]]; then
+    CODE="agy-ide"
 fi
 
 cmd="$CODE $WAIT $new_window_arg $goto_param '$arg'"
