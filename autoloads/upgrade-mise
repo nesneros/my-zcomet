@@ -6,6 +6,9 @@ if ! mise self-update --yes 2>/tmp/mise-self-update-err; then
 	print "mise self-update skipped: $(</tmp/mise-self-update-err)"
 fi
 mise upgrade 2>&1
+
+eval "$(mise activate zsh)"
+
 if ! mise dr >/dev/null 2>&1; then
 	mise dr || :
 fi
