@@ -30,13 +30,11 @@ _cron-parse-interval() {
     esac
 }
 
-_cron-state-file() {
-    echo "${XDG_DATA_HOME:-$HOME/.local/share}/my-zcomet/cron-state"
-}
+state_file="${XDG_DATA_HOME:-$HOME/.local/share}/my-zcomet/cron-state"
+mkdir -p "${state_file:h}"
 
 _cron-get-last-run() {
     local key=$1
-    local state_file=$(_cron-state-file)
     [[ -f $state_file ]] || { echo 0; return }
     local line
     line=$(grep "^${key}=" "$state_file" 2>/dev/null)
@@ -45,8 +43,6 @@ _cron-get-last-run() {
 
 _cron-set-last-run() {
     local key=$1 ts=$2
-    local state_file=$(_cron-state-file)
-    mkdir -p "${state_file:h}"
     local tmp="${state_file}.tmp"
     if [[ -f $state_file ]]; then
         grep -v "^${key}=" "$state_file" > "$tmp" 2>/dev/null || true
