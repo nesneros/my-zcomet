@@ -7,11 +7,8 @@ go-jsonnet = "latest"
 
 [tasks.generate]
 alias = "githook-post-merge"
-description = "Generate completoins and init scripts"
-run = "./setup/generate-source-cache.sh"
-
-[tasks.post-merge]
-run = "mise run generate"
+description = "Generate completions and init scripts"
+run = "./setup/generate-source-cache.sh && ./setup/generate-completions.sh"
 
 [tasks.sys-init]
 description = "Initialize system. This is idempotent"
