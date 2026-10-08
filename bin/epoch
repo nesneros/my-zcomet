@@ -1,0 +1,109 @@
+#!/usr/bin/env zsh
+#
+# epoch - convert an epoch timestamp to human-readable local time, or print
+# the current time as an epoch timestamp, in seconds/millis/micros/nanos.
+
+emulate -L zsh
+set -euo pipefail
+
+zmodload zsh/datetime
+
+usage="Usage: epoch [-s|-m|-u|-n] [epoch_value]
+
+  With no epoch_value (and nothing piped on stdin), prints the current
+  time as an epoch timestamp in the chosen unit (default: seconds).
+
+  With an epoch_value (as an argument, or piped via stdin), converts it
+  to human-readable local time. The unit is taken from -s/-m/-u/-n, or
+  auto-detected from the number of digits if no unit flag is given.
+
+  -s, --seconds   seconds      (10 digits)
+  -m, --millis    milliseconds (13 digits)
+  -u, --micros    microseconds (16 digits)
+  -n, --nanos     nanoseconds  (19 digits)
+  -h, --help      show this help
+
+  Note: macOS has no nanosecond-resolution clock available to the shell,
+  so generated nanosecond values are microsecond-precision, zero-padded."
+
+# _epoch-now <unit> - print the current time as an epoch value in <unit>
+_epoch-now() {
+    local unit=$1
+    local ns
+    ns=$(/bin/date +%s%N 2>/dev/null)
+    if [[ $ns != <->  ]]; then
+        # %N unsupported: fall back to zsh's (lower-resolution) clock
+        ns=$(printf '%.0f' $(( EPOCHREALTIME * 1000000000 )))
+    fi
+    local len=${#ns}
+    case $unit in
+        s)  print -r -- "${ns[1,len-9]}" ;;
+        ms) print -r -- "${ns[1,len-6]}" ;;
+        us) print -r -- "${ns[1,len-3]}" ;;
+        ns) print -r -- "$ns" ;;
+    esac
+}
+
+# _epoch-unit-for-length <digit-count> - guess the unit from input length
+_epoch-unit-for-length() {
+    local len=$1
+    if   (( len <= 10 )); then print -r -- s
+    elif (( len <= 13 )); then print -r -- ms
+    elif (( len <= 16 )); then print -r -- us
+    else                       print -r -- ns
+    fi
+}
+
+# _epoch-to-human <value> <unit> - print <value> (in <unit>) as local time
+_epoch-to-human() {
+    local value=$1 unit=$2
+    local divisor width secs frac
+    case $unit in
+        s)  divisor=1          width=0 ;;
+        ms) divisor=1000       width=3 ;;
+        us) divisor=1000000    width=6 ;;
+        ns) divisor=1000000000 width=9 ;;
+    esac
+    secs=$(( value / divisor ))
+    local base tz
+    base=$(strftime "%Y-%m-%d %H:%M:%S" $secs)
+    tz=$(strftime "%Z" $secs)
+    if (( width > 0 )); then
+        frac=$(( value % divisor ))
+        printf "%s.%0${width}d %s\n" "$base" "$frac" "$tz"
+    else
+        printf "%s %s\n" "$base" "$tz"
+    fi
+}
+
+local unit="" epoch_time=""
+while (( $# )); do
+    case $1 in
+        -s|--seconds) unit=s; shift ;;
+        -m|--millis)  unit=ms; shift ;;
+        -u|--micros)  unit=us; shift ;;
+        -n|--nanos)   unit=ns; shift ;;
+        -h|--help) print -r -- "$usage"; exit 0 ;;
+        --) shift; epoch_time=$1; shift; break ;;
+        -*) print -ru2 -- "Unknown option: $1"; print -ru2 -- "$usage"; exit 2 ;;
+        *) epoch_time=$1; shift ;;
+    esac
+done
+
+if [[ -z $epoch_time && ! -t 0 ]]; then
+    epoch_time=$(cat)
+fi
+
+if [[ -z $epoch_time ]]; then
+    _epoch-now "${unit:-s}"
+    exit 0
+fi
+
+if [[ $epoch_time != <-> ]]; then
+    print -ru2 -- "Invalid epoch time: '$epoch_time' (expected digits only)"
+    exit 1
+fi
+
+[[ -z $unit ]] && unit=$(_epoch-unit-for-length ${#epoch_time})
+
+_epoch-to-human "$epoch_time" "$unit"

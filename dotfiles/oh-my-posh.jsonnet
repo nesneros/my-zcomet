@@ -4,6 +4,7 @@ local plain(x) = { style: 'plain' } + x;
 
 {
   '$schema': 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json',
+  streaming: 50,
   upgrade: {
     source: 'cdn',
     interval: '168h',
@@ -40,6 +41,7 @@ local plain(x) = { style: 'plain' } + x;
         }),
         powerline({
           type: 'git',
+          native_status: true,
           foreground: '#193549',
           background: '#24d55c',
           background_templates: [
