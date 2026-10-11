@@ -10,7 +10,7 @@ _add_source_cache() {
         echo "Adding $@ to source cache"
         echo "### BEGIN $@" >>"$source_cache"
         "$@" >>"$source_cache"
-        echo >>"$source_cache" # Add newline incase command doesn't end with a final newline
+        echo >>"$source_cache" # Add newline in case command doesn't end with a final newline
         echo "### END $@" >>"$source_cache"
         echo >>"$source_cache"
     else
