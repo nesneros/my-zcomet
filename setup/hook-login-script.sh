@@ -6,7 +6,7 @@ set -e
 
 setupDir=$(dirname -- "${BASH_SOURCE[0]}")/..
 MY_ZCOMET=$(
-    cd $setupDir
+    cd "$setupDir"
     pwd
 )
 name=zcomet.Custom.LoginScript
@@ -44,8 +44,8 @@ EOF
     launchctl remove $name || :
     #launchctl load -w "$tmp"
 
-    cat $tmp >$HOME/Library/LaunchAgents/$name.plist
+    cat "$tmp" >"$HOME/Library/LaunchAgents/$name.plist"
 
     rm -f "$tmp"
-    rmdir $d
+    rmdir "$d"
 fi

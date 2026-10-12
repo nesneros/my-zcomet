@@ -2,16 +2,16 @@
 
 set -e
 
-kittydDir="$(pwd)/dotfiles/kitty.d"
-kittyConfDir="$HOME/.config/kitty"
+kitty_d_dir="$(pwd)/dotfiles/kitty.d"
+kitty_conf_dir="$HOME/.config/kitty"
 
-[ -d "$kittyConfDir" ] || exit 0
+[ -d "$kitty_conf_dir" ] || exit 0
 
 echo "### Linking kitty config"
-echo ln -s "$kittydDir" "$kittyConfDir" || :
+echo ln -s "$kitty_d_dir" "$kitty_conf_dir" || :
 
-if [ -f "$kittyConfDir/current-theme.conf" ]; then
-    ln -s "$kittyConfDir/current-theme.conf" "$kittydDir" || :
+if [ -f "$kitty_conf_dir/current-theme.conf" ]; then
+    ln -s "$kitty_conf_dir/current-theme.conf" "$kitty_d_dir" || :
 fi
 
 echo

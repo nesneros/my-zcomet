@@ -23,7 +23,7 @@ done
 
 unset config_file
 
-# Remove duplicates and non-existant directories from misc paths 
+# Remove duplicates and non-existent directories from misc paths 
 # This should not be done before the zcomet plugin is completely loaded
 cleanup-path() {
   local var_name=$1
