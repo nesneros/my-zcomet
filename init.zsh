@@ -7,6 +7,8 @@ export FPATH=$MY_ZCOMET/generated/functions:$FPATH
 
 autoload -Uz $MY_ZCOMET/autoloads/*
 
+autoload zmv
+
 func alias+() {
     alias "$1"="${aliases[$1]:-$1} $argv[2,-1]"
 }
