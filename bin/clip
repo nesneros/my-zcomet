@@ -1,16 +1,23 @@
 #!/bin/zsh -e
 
-CLIP_DIR="$HOME/.local/share/clipstore"
+CLIP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clip"
 
 mkdir -p "$CLIP_DIR"
 
-usage() {
-  echo "Usage:"
-  echo "  clipstore -l, --list            List all saved snippets"
-  echo "  clipstore -d, --delete <name>   Delete a named snippet"
-  echo "  clipstore -h, --help            Show this usage message"
-  echo "  clipstore <name>                Intelligently save or paste the named snippet"
-}
+usage="Usage: clip [-l|-d <name>|-h] [<name>]
+
+  Copy between the clipboard and stdin/stdout, and store named snippets.
+
+  With no name and nothing piped on stdin, prints the clipboard.
+  With no name and stdin piped, copies stdin to the clipboard.
+
+  With a name and nothing piped, copies the saved snippet to the
+  clipboard and prints it. With a name and stdin piped, saves stdin
+  as that snippet and copies it to the clipboard.
+
+  -l, --list          list all saved snippets
+  -d, --delete <name> delete a named snippet
+  -h, --help          show this help"
 
 noargs() {
   if [[ -t 0 ]]; then
@@ -23,17 +30,17 @@ noargs() {
 
 case "$1" in
 -h | --help)
-  usage
+  print -r -- "$usage"
   ;;
 -l | --list)
   ls -1 "$CLIP_DIR"
   ;;
 -d | --delete)
-  [[ -z "$2" ]] && usage && exit 1
+  [[ -z "$2" ]] && print -r -- "$usage" && exit 1
   rm -f "$CLIP_DIR/$2" && echo "Deleted '$2'"
   ;;
 -*)
-  usage && exit 1
+  print -r -- "$usage" && exit 1
   ;;
 *)
   if [[ -t 0 ]]; then
