@@ -1,6 +1,6 @@
 #!/bin/zsh -e
 
-CLIP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clipstore"
+CLIP_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/clip"
 
 mkdir -p "$CLIP_DIR"
 
