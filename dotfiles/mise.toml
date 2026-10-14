@@ -2,7 +2,7 @@
 carapace = "latest"
 go = "latest"
 "go:github.com/maruel/panicparse/v2" = "latest"
+"github:nesneros/compleo" = "v0.0.1"
 
 [settings]
 experimental = true
-
