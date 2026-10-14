@@ -25,7 +25,7 @@ alias+ df -h
 
 # Some global aliases
 alias -g B='| bat'
-alias -g E='| pipeedit'
+alias -g E='| source /dev/stdin'
 alias -g F='| less +F'
 alias -g H='| head'
 alias -g L='| ov'
