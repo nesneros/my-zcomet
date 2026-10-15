@@ -1,8 +1,8 @@
 [tools]
-carapace = "latest"
+carapace = "v1.8.0"
 go = "latest"
 "go:github.com/maruel/panicparse/v2" = "latest"
-"github:nesneros/compleo" = "v0.0.1"
+"github:nesneros/compleo" = "v0.0.3"
 
 [settings]
 experimental = true
