@@ -1,10 +1,11 @@
 [tools]
-carapace = "v1.8.0"
+carapace = "v1.8.1"
 go = "latest"
 "go:github.com/maruel/panicparse/v2" = "latest"
-"github:nesneros/compleo" = "v0.0.4"    
+"github:nesneros/compleo" = "v0.0.5"
 rust = "latest"
 "cargo:nushell/nufmt" = "latest"
+"cargo:FMotalleb/nu_plugin_port_extension" = "latest"
 
 
 [settings]
