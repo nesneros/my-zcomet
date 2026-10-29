@@ -1,4 +1,6 @@
-hash mise &>/dev/null || return 0
+#!/usr/bin/env zsh
+
+hash mise &>/dev/null || exit 0
 
 # Attempt self-update; packagers (brew, etc.) can disable this command,
 # in which case mise exits non-zero – just print a short notice and move on
@@ -7,11 +9,12 @@ if ! mise self-update --yes 2>/tmp/mise-self-update-err; then
 fi
 mise upgrade 2>&1
 
-eval "$(mise activate zsh)"
-
 if ! mise dr >/dev/null 2>&1; then
 	mise dr || :
 fi
 
-mkdir -p /usr/local/share/zsh/site-functions 
-mise completion zsh > /usr/local/share/zsh/site-functions/_mise
+compdir=/usr/local/share/zsh/site-functions
+if [[ "${fpath[(ie)$compdir]}" -le ${#fpath} ]]; then
+	mkdir -p "$compdir"
+	mise completion zsh > "$compdir/_mise"
+fi
